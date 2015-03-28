@@ -65,14 +65,17 @@ void MainContentComponent::paint (Graphics& g)
 void MainContentComponent::buttonClicked(Button *button) 
 {
     if (buttonStopGo.getButtonText() == "Go!") {
-	buttonStopGo.setButtonText("Stop!");
-	labelSerialDevice.setEnabled(false);
-	labelOSCHost.setEnabled(false);
-	labelOSCPort.setEnabled(false);
-	textSerialDevice.setEnabled(false);
-	textOSCHost.setEnabled(false);
-	textOSCPort.setEnabled(false);
-	serialPortReader.startThread();
+	if (0 == serialPortReader.openSerialDevice(textSerialDevice.getText())) 
+	{
+	    buttonStopGo.setButtonText("Stop!");
+	    labelSerialDevice.setEnabled(false);
+	    labelOSCHost.setEnabled(false);
+	    labelOSCPort.setEnabled(false);
+	    textSerialDevice.setEnabled(false);
+	    textOSCHost.setEnabled(false);
+	    textOSCPort.setEnabled(false);
+	    serialPortReader.startThread();
+	}
     } else {
 	buttonStopGo.setButtonText("Go!");
 	labelSerialDevice.setEnabled(true);
