@@ -13,11 +13,11 @@
 
 
 //==============================================================================
-class NewProjectApplication  : public JUCEApplication
+class retrofootApplication  : public JUCEApplication
 {
 public:
     //==============================================================================
-    NewProjectApplication() {}
+    retrofootApplication() {}
 
     const String getApplicationName() override       { return ProjectInfo::projectName; }
     const String getApplicationVersion() override    { return ProjectInfo::versionString; }
@@ -97,4 +97,4 @@ private:
 
 //==============================================================================
 // This macro generates the main() routine that launches the app.
-START_JUCE_APPLICATION (NewProjectApplication)
+START_JUCE_APPLICATION (retrofootApplication)

@@ -10,7 +10,7 @@
     <key>CFBundleIdentifier</key>
     <string>com.misticlabs.retrofoot</string>
     <key>CFBundleName</key>
-    <string>NewProject</string>
+    <string>retrofoot</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleSignature</key>

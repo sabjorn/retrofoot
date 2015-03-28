@@ -10,8 +10,8 @@
 
 */
 
-#ifndef __APPHEADERFILE_G9RZZG__
-#define __APPHEADERFILE_G9RZZG__
+#ifndef __APPHEADERFILE_POCPX3__
+#define __APPHEADERFILE_POCPX3__
 
 #include "AppConfig.h"
 #include "modules/juce_audio_basics/juce_audio_basics.h"
@@ -37,10 +37,10 @@
 #if ! JUCE_DONT_DECLARE_PROJECTINFO
 namespace ProjectInfo
 {
-    const char* const  projectName    = "NewProject";
+    const char* const  projectName    = "retrofoot";
     const char* const  versionString  = "1.0.0";
     const int          versionNumber  = 0x10000;
 }
 #endif
 
-#endif   // __APPHEADERFILE_G9RZZG__
+#endif   // __APPHEADERFILE_POCPX3__

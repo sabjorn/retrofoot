@@ -11,8 +11,8 @@
 
 */
 
-#ifndef __JUCE_APPCONFIG_G9RZZG__
-#define __JUCE_APPCONFIG_G9RZZG__
+#ifndef __JUCE_APPCONFIG_POCPX3__
+#define __JUCE_APPCONFIG_POCPX3__
 
 //==============================================================================
 // [BEGIN_USER_CODE_SECTION]
@@ -193,4 +193,4 @@
 #endif
 
 
-#endif  // __JUCE_APPCONFIG_G9RZZG__
+#endif  // __JUCE_APPCONFIG_POCPX3__
