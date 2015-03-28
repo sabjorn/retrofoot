@@ -18,7 +18,7 @@ MainContentComponent::MainContentComponent()
 {
     uint32_t y = 10;
 
-    setSize (400, 100);
+    setSize (400, 120);
 
     // Serial Device Setting
     labelSerialDevice.setBounds(10, y, 100, 20);
@@ -27,7 +27,7 @@ MainContentComponent::MainContentComponent()
     textSerialDevice.setBounds (100, y, 200, 20);
     addAndMakeVisible(textSerialDevice);
 
-    y += 20;
+    y += 25;
 
     // OSC Host Setting
     labelOSCHost.setBounds(10, y, 100, 20);
@@ -36,7 +36,7 @@ MainContentComponent::MainContentComponent()
     textOSCHost.setBounds(100, y, 200, 20);
     addAndMakeVisible(textOSCHost);
 
-    y += 20;
+    y += 25;
 
     // OSC Post Setting
     labelOSCPort.setBounds(10, y, 100, 20);
@@ -45,7 +45,7 @@ MainContentComponent::MainContentComponent()
     textOSCPort.setBounds(100, y, 200, 20);
     addAndMakeVisible(textOSCPort);
 
-    y += 20;
+    y += 25;
 
     // Stop-go button
     buttonStopGo.setBounds(10, y, 50, 20);
