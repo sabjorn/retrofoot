@@ -15,18 +15,25 @@ SerialThread::~SerialThread()
     delete serialPort;
 }
 
-int SerialThread::openSerialDevice(const String &device)
+int SerialThread::openSerialDevice(const String &device, SerialPort::BaudRate baudRate)
 {
 
     serialPort = new SerialPort(device.toStdString());
 
     if (NULL != serialPort)
     {
-	serialPort->Open();
+	try
+	{
+	    serialPort->Open();
+	}
+	catch(SerialPort::OpenFailed) 
+	{
+	    std::cout << "could not open (" << device.toStdString() << ")" << std::endl;
+	}
 
 	if (serialPort->IsOpen())
 	{
-	    serialPort->SetBaudRate(SerialPort::BAUD_115200);
+	    serialPort->SetBaudRate(baudRate);
 	    return 0;
 	}
     }
@@ -43,7 +50,7 @@ void SerialThread::run()
 
 	serialPort->WriteByte(' ');
 
-	if (serialPort->IsDataAvailable())
+	while (serialPort->IsDataAvailable())
 	{
 	    tmp = serialPort->ReadLine();
 	    for (uint32_t i = 0; i < tmp.length(); i++)
@@ -54,7 +61,9 @@ void SerialThread::run()
 	}
 
 	// sleep a bit so the threads don't all grind the CPU to a halt..
-	wait (1);
+	wait (5);
     }
+
+    serialPort->Close();
 
 }

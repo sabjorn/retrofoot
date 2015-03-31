@@ -5,6 +5,10 @@
               jucerVersion="3.1.0">
   <MAINGROUP id="FYRgwK" name="retrofoot">
     <GROUP id="{5F1EFCF4-0626-E490-E53A-498FE85CA886}" name="Source">
+      <FILE id="ejVgmT" name="SerialDeviceChooser.cpp" compile="1" resource="0"
+            file="Source/SerialDeviceChooser.cpp"/>
+      <FILE id="f2ftgX" name="SerialDeviceChooser.h" compile="0" resource="0"
+            file="Source/SerialDeviceChooser.h"/>
       <FILE id="NRWwBh" name="SerialThread.cpp" compile="1" resource="0"
             file="Source/SerialThread.cpp"/>
       <FILE id="IYoSTn" name="SerialThread.h" compile="0" resource="0" file="Source/SerialThread.h"/>

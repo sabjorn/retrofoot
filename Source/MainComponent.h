@@ -11,6 +11,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SerialThread.h"
+#include "SerialDeviceChooser.h"
 
 //==============================================================================
 /*
@@ -18,7 +19,8 @@
     your controls and content.
 */
 class MainContentComponent   : public Component,
-                               public ButtonListener
+                               public ButtonListener,
+                               public MessageListener
 {
 public:
     //==============================================================================
@@ -28,20 +30,26 @@ public:
     void resized();
     void paint(Graphics &g);
     void buttonClicked(Button *button);
+    void handleMessage(const Message &message);
 
 private:
 
-    Label    labelSerialDevice;
-    Label    labelOSCHost;
-    Label    labelOSCPort;
-    
-    TextEditor textSerialDevice;
-    TextEditor textOSCHost;
-    TextEditor textOSCPort;
+    // Constants
+    static const uint32_t xSize = 400;
+    static const uint32_t ySize = 200;
 
-    TextButton buttonStopGo;
+    // Serial Port Stuff
+    GroupComponent      groupSerialSetup;
+    Label               labelSerialDevice;
+    SerialDeviceChooser comboSerialDevice;
+    Label               labelSerialBaud;
+    ComboBox            comboSerialBaud;
+    SerialThread        serialPortReader;
+    TextButton          buttonStopGo;
 
-    SerialThread serialPortReader;
+    // Mode Stuff
+    GroupComponent groupMode;
+    ToggleButton   buttonModeSelect[3];
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)

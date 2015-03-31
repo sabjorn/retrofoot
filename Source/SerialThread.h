@@ -18,7 +18,7 @@ public:
     ~SerialThread();
     
     void run();
-    int openSerialDevice(const String &device);
+    int openSerialDevice(const String &device, SerialPort::BaudRate baudRate);
 
 private:
 

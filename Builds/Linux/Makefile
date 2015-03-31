@@ -51,6 +51,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/SerialDeviceChooser_b70e2652.o \
   $(OBJDIR)/SerialThread_aac422a7.o \
   $(OBJDIR)/MainComponent_a6ffb4a5.o \
   $(OBJDIR)/Main_90ebc5c2.o \
@@ -84,6 +85,11 @@ clean:
 strip:
 	@echo Stripping retrofoot
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/SerialDeviceChooser_b70e2652.o: ../../Source/SerialDeviceChooser.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling SerialDeviceChooser.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/SerialThread_aac422a7.o: ../../Source/SerialThread.cpp
 	-@mkdir -p $(OBJDIR)
