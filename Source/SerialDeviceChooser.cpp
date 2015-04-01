@@ -16,14 +16,12 @@ SerialDeviceChooser::~SerialDeviceChooser()
 
 void SerialDeviceChooser::run()
 {
-    uint32_t oldId;
+    uint32_t selId;
     sp_port **sps;
-    sp_return rc;
-    uint32_t itr = 0;
 
     while (!threadShouldExit()) 
     {
-	wait (1000);
+	wait (500);
 
 	const MessageManagerLock mml (Thread::getCurrentThread());
 
@@ -33,44 +31,36 @@ void SerialDeviceChooser::run()
 	if (sp_list_ports(&sps) != SP_OK)
 	    return;
 
-	itr = 0;
-	std::cout << "Devices: " << std::endl;
+	StringArray tmpDevices;
+	uint32_t itr = 0;
 	while (sps[itr] != NULL)
 	{
-	    std::cout << sp_get_port_name(sps[itr]) << std::endl;
+	    tmpDevices.add(sp_get_port_name(sps[itr]));
 	    itr++;
 	}
 
 	sp_free_port_list(sps);
 
-//	StringArray tmpDevices;
-//
-//	// Iterate over the files we find here. They should be links so 
-//	// follow the link to the real device node. getLinkedTarget just 
-//	// returns the same file if it is not a link so safe to use for
-//	// OS X. 
-//	while (dirIter.next())
-//	{
-//	    tmpDevices.add(dirIter.getFile().getLinkedTarget().getFullPathName());
-//	}
-//
-//	oldId = getSelectedId();
-//	for (uint32_t i = 0; i < tmpDevices.size(); i++)
-//	{
-//	    if (!devices.contains(tmpDevices[i]))
-//	    {
-//		oldId = tmpDevices[i].hash();
-//	    }
-//	}
-//
-//	devices = tmpDevices;
-//
-//	clear();
-//	for (uint32_t i = 0; i < devices.size(); i++)
-//	{
-//	    addItem(devices[i], devices[i].hash());
-//	}
-//	setSelectedId(oldId);
+	selId = getSelectedId();
+	for (uint32_t i = 0; i < tmpDevices.size(); i++)
+	{
+	    if (!devices.contains(tmpDevices[i]))
+	    {
+		// Select any device that is "New"
+		// if multiple devices show up it will select whichever
+		// one shows up last. Oh well.
+		selId = tmpDevices[i].hash();
+	    }
+	}
+
+	devices = tmpDevices;
+
+	clear();
+	for (uint32_t i = 0; i < devices.size(); i++)
+	{
+	    addItem(devices[i], devices[i].hash());
+	}
+	setSelectedId(selId);
 
     }
 
