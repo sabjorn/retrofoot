@@ -2,7 +2,7 @@
 #define SERIALTHREAD_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include <SerialStream.h>
+#include <libserialport.h>
 
 
 //==============================================================================
@@ -18,11 +18,9 @@ public:
     ~SerialThread();
     
     void run();
-    int openSerialDevice(const String &device, SerialPort::BaudRate baudRate);
+    int openSerialDevice(const String &device, int baudRate);
 
 private:
-
-    SerialPort *serialPort;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SerialThread)

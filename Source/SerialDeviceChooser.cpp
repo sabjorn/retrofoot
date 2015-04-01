@@ -1,4 +1,5 @@
 #include "SerialDeviceChooser.h"
+#include "libserialport.h"
 #include <iostream>
 
 SerialDeviceChooser::SerialDeviceChooser(const String &componentName) 
@@ -16,6 +17,9 @@ SerialDeviceChooser::~SerialDeviceChooser()
 void SerialDeviceChooser::run()
 {
     uint32_t oldId;
+    sp_port **sps;
+    sp_return rc;
+    uint32_t itr = 0;
 
     while (!threadShouldExit()) 
     {
@@ -26,42 +30,47 @@ void SerialDeviceChooser::run()
 	if (! mml.lockWasGained())  // if something is trying to kill this job, the lock
 	    return;                 // will fail, in which case we'd better return..
 
-#if JUCE_LINUX
-	DirectoryIterator dirIter (File("/dev/serial/by-id"), false, "*", File::findFiles);
-#endif
+	if (sp_list_ports(&sps) != SP_OK)
+	    return;
 
-#if JUCE_MAC
-	DirectoryIterator dirIter (File("/dev"), false, "cu.*", File::findFiles);
-#endif
-
-	StringArray tmpDevices;
-
-	// Iterate over the files we find here. They should be links so 
-	// follow the link to the real device node. getLinkedTarget just 
-	// returns the same file if it is not a link so safe to use for
-	// OS X. 
-	while (dirIter.next())
+	itr = 0;
+	std::cout << "Devices: " << std::endl;
+	while (sps[itr] != NULL)
 	{
-	    tmpDevices.add(dirIter.getFile().getLinkedTarget().getFullPathName());
+	    std::cout << sp_get_port_name(sps[itr]) << std::endl;
+	    itr++;
 	}
 
-	oldId = getSelectedId();
-	for (uint32_t i = 0; i < tmpDevices.size(); i++)
-	{
-	    if (!devices.contains(tmpDevices[i]))
-	    {
-		oldId = tmpDevices[i].hash();
-	    }
-	}
+	sp_free_port_list(sps);
 
-	devices = tmpDevices;
-
-	clear();
-	for (uint32_t i = 0; i < devices.size(); i++)
-	{
-	    addItem(devices[i], devices[i].hash());
-	}
-	setSelectedId(oldId);
+//	StringArray tmpDevices;
+//
+//	// Iterate over the files we find here. They should be links so 
+//	// follow the link to the real device node. getLinkedTarget just 
+//	// returns the same file if it is not a link so safe to use for
+//	// OS X. 
+//	while (dirIter.next())
+//	{
+//	    tmpDevices.add(dirIter.getFile().getLinkedTarget().getFullPathName());
+//	}
+//
+//	oldId = getSelectedId();
+//	for (uint32_t i = 0; i < tmpDevices.size(); i++)
+//	{
+//	    if (!devices.contains(tmpDevices[i]))
+//	    {
+//		oldId = tmpDevices[i].hash();
+//	    }
+//	}
+//
+//	devices = tmpDevices;
+//
+//	clear();
+//	for (uint32_t i = 0; i < devices.size(); i++)
+//	{
+//	    addItem(devices[i], devices[i].hash());
+//	}
+//	setSelectedId(oldId);
 
     }
 

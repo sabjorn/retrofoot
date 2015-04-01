@@ -7,7 +7,6 @@
 */
 
 #include "MainComponent.h"
-#include <SerialStream.h>
 
 
 //==============================================================================
@@ -48,14 +47,14 @@ MainContentComponent::MainContentComponent()
 
     comboSerialBaud.setBounds(100, y, 200, 20);
     addAndMakeVisible(comboSerialBaud);
-    comboSerialBaud.addItem("2400", SerialPort::BAUD_2400); 	
-    comboSerialBaud.addItem("4800", SerialPort::BAUD_4800); 	
-    comboSerialBaud.addItem("9600", SerialPort::BAUD_9600); 	
-    comboSerialBaud.addItem("19200", SerialPort::BAUD_19200);	
-    comboSerialBaud.addItem("38400", SerialPort::BAUD_38400); 	
-    comboSerialBaud.addItem("57600", SerialPort::BAUD_57600); 	
-    comboSerialBaud.addItem("115200", SerialPort::BAUD_115200);
-    comboSerialBaud.setSelectedId(SerialPort::BAUD_115200);
+//    comboSerialBaud.addItem("2400", SerialPort::BAUD_2400); 	
+//    comboSerialBaud.addItem("4800", SerialPort::BAUD_4800); 	
+//    comboSerialBaud.addItem("9600", SerialPort::BAUD_9600); 	
+//    comboSerialBaud.addItem("19200", SerialPort::BAUD_19200);	
+//    comboSerialBaud.addItem("38400", SerialPort::BAUD_38400); 	
+//    comboSerialBaud.addItem("57600", SerialPort::BAUD_57600); 	
+//    comboSerialBaud.addItem("115200", SerialPort::BAUD_115200);
+//    comboSerialBaud.setSelectedId(SerialPort::BAUD_115200);
 
     y += 60;
 
@@ -115,7 +114,8 @@ void MainContentComponent::buttonClicked(Button *button)
     {
 	if (buttonStopGo.getToggleState()) 
 	{
-	    if (0 == serialPortReader.openSerialDevice(comboSerialDevice.getText(), (SerialPort::BaudRate)comboSerialBaud.getSelectedId())) 
+//	    if (0 == serialPortReader.openSerialDevice(comboSerialDevice.getText(), (SerialPort::BaudRate)comboSerialBaud.getSelectedId())) 
+	    if (1)
 	    {
 		buttonStopGo.setButtonText("Stop!");
 		labelSerialDevice.setEnabled(false);
