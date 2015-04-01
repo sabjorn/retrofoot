@@ -1,4 +1,5 @@
 #include "SerialThread.h"
+#include <lo/lo.h>
 #include <iostream>
 
 
@@ -49,6 +50,8 @@ void SerialThread::run()
     char buf[BUF_SIZE];
     char wbuf = ' ';
 
+    lo_address t = lo_address_new("192.168.1.128", "7777");
+
     while (!threadShouldExit()) 
     {
 
@@ -60,11 +63,14 @@ void SerialThread::run()
 	    for (uint32_t i = 0; i < nRead; i++)
 	    {
 		std::cout << (int)buf[i] << " ";
+		lo_send(t, "/test", "i", (int)buf[i]);
 	    }
 	    std::cout << std::endl;
 	}
 	// sleep a bit so the threads don't all grind the CPU to a halt..
 	wait (5);
     }
+
+    lo_address_free(t);
 
 }

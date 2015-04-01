@@ -2023,7 +2023,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
-				OTHER_LDFLAGS = "-lserialport";
+				OTHER_LDFLAGS = "-lserialport -llo";
 				SDKROOT_ppc = macosx10.5; }; name = Debug; };
 		B6DCF791486C065ADAE6D4F7 = {isa = XCBuildConfiguration; buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
@@ -2045,7 +2045,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
-				OTHER_LDFLAGS = "-lserialport";
+				OTHER_LDFLAGS = "-lserialport -llo";
 				SDKROOT_ppc = macosx10.5; }; name = Release; };
 		99FBE47662812FFBC5DC4B0F = {isa = XCBuildConfiguration; buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
