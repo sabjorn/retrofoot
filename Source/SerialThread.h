@@ -10,7 +10,8 @@
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-class SerialThread : public Thread
+class SerialThread : public Thread,
+                     public ActionBroadcaster
 {
 public:
     //==============================================================================

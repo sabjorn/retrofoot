@@ -51,6 +51,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/KeyboardMonitorComponent_b6438c53.o \
   $(OBJDIR)/SerialDeviceChooser_b70e2652.o \
   $(OBJDIR)/SerialThread_aac422a7.o \
   $(OBJDIR)/MainComponent_a6ffb4a5.o \
@@ -59,6 +60,7 @@ OBJECTS := \
   $(OBJDIR)/juce_audio_devices_44d00ac9.o \
   $(OBJDIR)/juce_audio_formats_73515469.o \
   $(OBJDIR)/juce_audio_processors_d11d9b83.o \
+  $(OBJDIR)/juce_audio_utils_5ff6f09.o \
   $(OBJDIR)/juce_core_5f5a3bad.o \
   $(OBJDIR)/juce_cryptography_55e5c007.o \
   $(OBJDIR)/juce_data_structures_7e517fa9.o \
@@ -85,6 +87,11 @@ clean:
 strip:
 	@echo Stripping retrofoot
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/KeyboardMonitorComponent_b6438c53.o: ../../Source/KeyboardMonitorComponent.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling KeyboardMonitorComponent.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/SerialDeviceChooser_b70e2652.o: ../../Source/SerialDeviceChooser.cpp
 	-@mkdir -p $(OBJDIR)
@@ -124,6 +131,11 @@ $(OBJDIR)/juce_audio_formats_73515469.o: ../../../juce/modules/juce_audio_format
 $(OBJDIR)/juce_audio_processors_d11d9b83.o: ../../../juce/modules/juce_audio_processors/juce_audio_processors.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_processors.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_audio_utils_5ff6f09.o: ../../../juce/modules/juce_audio_utils/juce_audio_utils.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_audio_utils.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_core_5f5a3bad.o: ../../../juce/modules/juce_core/juce_core.cpp

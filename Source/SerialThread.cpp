@@ -59,13 +59,15 @@ void SerialThread::run()
 
 	if (sp_output_waiting(sp) > 0)
 	{
-	    uint32 nRead = sp_nonblocking_read(sp, buf, BUF_SIZE);
+	    uint32_t nRead = sp_nonblocking_read(sp, buf, BUF_SIZE);
 	    for (uint32_t i = 0; i < nRead; i++)
 	    {
-		std::cout << (int)buf[i] << " ";
 		lo_send(t, "/test", "i", (int)buf[i]);
+
+		int32_t msgVal = (i << 16) + buf[i];
+		
+		sendActionMessage(String(msgVal));
 	    }
-	    std::cout << std::endl;
 	}
 	// sleep a bit so the threads don't all grind the CPU to a halt..
 	wait (5);

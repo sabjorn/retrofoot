@@ -12,6 +12,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SerialThread.h"
 #include "SerialDeviceChooser.h"
+#include "KeyboardMonitorComponent.h"
 
 //==============================================================================
 /*
@@ -36,7 +37,7 @@ private:
 
     // Constants
     static const uint32_t xSize = 400;
-    static const uint32_t ySize = 200;
+    static const uint32_t ySize = 250;
 
     // Serial Port Stuff
     GroupComponent      groupSerialSetup;
@@ -50,6 +51,14 @@ private:
     // Mode Stuff
     GroupComponent groupMode;
     ToggleButton   buttonModeSelect[3];
+
+    Label          labelOSCHost;
+    Label          labelOSCPort;
+    TextEditor     textOSCHost;
+    TextEditor     textOSCPort;
+
+    // Monitor Stuff
+    KeyboardMonitorComponent keyboardMonitor;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)

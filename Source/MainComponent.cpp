@@ -15,14 +15,17 @@ MainContentComponent::MainContentComponent()
       groupMode(String::empty, "Mode"),
       labelSerialDevice(String::empty, "Device:"),
       labelSerialBaud(String::empty, "Baud Rate:"),
-      buttonStopGo("Go!")
+      buttonStopGo("Go!"),
+      labelOSCHost(String::empty, "OSC Host:"),
+      labelOSCPort(String::empty, "Port:"),
+      keyboardMonitor(32)
 {
     uint32_t y = 10;
 
     setSize (xSize, ySize);
 
     // Serial Port Setup
-    groupSerialSetup.setBounds(10,y,xSize-20,100);
+    groupSerialSetup.setBounds(10,y,xSize-20,75);
     addAndMakeVisible(groupSerialSetup);
 
     y += 20;
@@ -56,33 +59,27 @@ MainContentComponent::MainContentComponent()
     comboSerialBaud.addItem("115200", 115200);
     comboSerialBaud.setSelectedId(115200);
 
-    y += 60;
+    y += 45;
 
     // Serial Port Setup
-    groupMode.setBounds(10,y,xSize-20,40);
+    groupMode.setBounds(10,y,xSize-20,55);
     addAndMakeVisible(groupMode);
 
-//    
-//    textSerialDevice.setBounds (100, y, 200, 20);
-//    addAndMakeVisible(textSerialDevice);
-//
-//    y += 25;
-//
-//    // OSC Host Setting
-//    labelOSCHost.setBounds(10, y, 100, 20);
-//    addAndMakeVisible(labelOSCHost);
-//    
-//    textOSCHost.setBounds(100, y, 200, 20);
-//    addAndMakeVisible(textOSCHost);
-//
-//    y += 25;
-//
-//    // OSC Post Setting
-//    labelOSCPort.setBounds(10, y, 100, 20);
-//    addAndMakeVisible(labelOSCPort);
-//    
-//    textOSCPort.setBounds(100, y, 200, 20);
-//    addAndMakeVisible(textOSCPort);
+    y += 20;
+
+    // OSC Host Setting
+    labelOSCHost.setBounds(21, y, 100, 20);
+    addAndMakeVisible(labelOSCHost);
+
+    textOSCHost.setBounds(100, y, 150, 20);
+    addAndMakeVisible(textOSCHost);
+
+    // OSC Port Setting
+    labelOSCPort.setBounds(268, y, 100, 20);
+    addAndMakeVisible(labelOSCPort);
+    
+    textOSCPort.setBounds(310, y, 60, 20);
+    addAndMakeVisible(textOSCPort);
 //
 //    y += 25;
 //
@@ -91,6 +88,13 @@ MainContentComponent::MainContentComponent()
 //    addAndMakeVisible(groupMode);
 //
 
+    y += 45;
+
+    keyboardMonitor.setBounds(10, y, xSize-20, 70);
+    keyboardMonitor.setKeyWidth(20);
+    addAndMakeVisible(keyboardMonitor);
+    
+    serialPortReader.addActionListener(&keyboardMonitor);
 
 }
 
