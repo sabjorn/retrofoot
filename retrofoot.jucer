@@ -25,10 +25,12 @@
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" externalLibraries="serialport&#10;lo">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="1" optimisation="1" targetName="retrofoot"/>
-        <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="0" optimisation="2" targetName="retrofoot"/>
+        <CONFIGURATION name="Debug" osxSDK="10.9 SDK" osxCompatibility="default" osxArchitecture="default"
+                       isDebug="1" optimisation="1" targetName="retrofoot" headerPath="/usr/local/include"
+                       libraryPath="/usr/local/lib"/>
+        <CONFIGURATION name="Release" osxSDK="10.9 SDK" osxCompatibility="default" osxArchitecture="default"
+                       isDebug="0" optimisation="2" targetName="retrofoot" headerPath="/usr/local/include"
+                       libraryPath="/usr/local/lib"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../juce/modules"/>
