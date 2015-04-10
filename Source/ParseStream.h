@@ -22,7 +22,9 @@ public:
 
 private:
 	bool state; //1 if inframe
-	bool counter; //store counter info
+	uint8_t header_state; //store counter info
+
+
 
 	//==============================================================================
 };
