@@ -63,7 +63,13 @@ void ParseStream::parse(uint8_t *buf, uint32_t size, StringArray &strArr) //pars
     // during READ_MSB, we go back to PRESYNC, the header byte happens to also be 0xFF which gets misinterpreted as the second sync byte, 
     // and then the subsequent packet parsing is total garbage but we don't know it until we fall out of sync at the end of the packet.
     // I don't forsee hitting this issue in practice but we could disallow 0xFF as the header byte (limited to 8x32=256 channels) 
-    // and go back to OUT_OF_FRAME if it happens to prevent this issue. . 
+    // 
+    // Another corner case is where we are out of frame, the lsb of the data before the sync word is 0xFF, we see the first 0xFF
+    // as the second, the second 0xFF as the header, and then parse the packet as garbage.. Disallowing 0xFF as the header 
+    // can also solve this problem although we should just stay in READ_HEADER until the data is != 0xFF. If we go back to OUT_OF_FRAME
+    // and the last LSB before the header is consistently 0xFF we may never sync. 
+    //
+    // I think this solves all corner cases I can think of so far. 
 
 	uint16_t i = 0;  
 
