@@ -10,8 +10,7 @@
     your controls and content.
 */
 
-class KeyboardMonitorComponent : public MidiKeyboardComponent,
-                                 public ActionListener
+class KeyboardMonitorComponent : public MidiKeyboardComponent
 {
 
 public:
@@ -19,7 +18,7 @@ public:
     KeyboardMonitorComponent(uint32_t numKeys);
     ~KeyboardMonitorComponent();
 
-    void actionListenerCallback(const String &message);	
+    void clearKeys();
     
 private:
 

@@ -21,7 +21,7 @@
 */
 class MainContentComponent   : public Component,
                                public ButtonListener,
-                               public MessageListener
+                               public ActionListener
 {
 public:
     //==============================================================================
@@ -31,7 +31,7 @@ public:
     void resized();
     void paint(Graphics &g);
     void buttonClicked(Button *button);
-    void handleMessage(const Message &message);
+    void actionListenerCallback(const String& message);
 
 private:
 

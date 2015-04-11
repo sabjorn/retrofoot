@@ -2,28 +2,36 @@
 #define SERIALTHREAD_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "ParseStream.h"
+
+#ifndef RETROFOOT_SERIAL_SIM
+// Uses libserialport. 
 #include <libserialport.h>
+#endif
 
 
-//==============================================================================
-/*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
-*/
-class SerialThread : public Thread,
+class SerialThread : private Thread,
                      public ActionBroadcaster
 {
 public:
     //==============================================================================
     SerialThread();
     ~SerialThread();
-    
-    void run();
-    int openSerialDevice(const String &device, int baudRate);
 
+    int start(const String &device, int baudRate);
+    int stop();
+    
 private:
 
+    void run();
+
+#ifndef RETROFOOT_SERIAL_SIM
     sp_port *sp;
+#else
+    MemoryBlock simData;
+#endif
+
+    ParseStream parser;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SerialThread)

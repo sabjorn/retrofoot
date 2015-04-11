@@ -19,7 +19,7 @@ ifeq ($(CONFIG),Debug)
   endif
 
   CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -D "JUCE_APP_VERSION=1.0.0" -D "JUCE_APP_VERSION_HEX=0x10000" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../juce/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) $(USER_DEFINES) -g -ggdb -O0
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -L/usr/X11R6/lib/ -lGL -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt -lserialport -llo 
   LDDEPS :=
@@ -51,6 +51,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/ParseStream_9b579cf4.o \
   $(OBJDIR)/KeyboardMonitorComponent_b6438c53.o \
   $(OBJDIR)/SerialDeviceChooser_b70e2652.o \
   $(OBJDIR)/SerialThread_aac422a7.o \
@@ -87,6 +88,11 @@ clean:
 strip:
 	@echo Stripping retrofoot
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/ParseStream_9b579cf4.o: ../../Source/ParseStream.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ParseStream.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/KeyboardMonitorComponent_b6438c53.o: ../../Source/KeyboardMonitorComponent.cpp
 	-@mkdir -p $(OBJDIR)

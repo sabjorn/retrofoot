@@ -94,18 +94,32 @@ MainContentComponent::MainContentComponent()
     keyboardMonitor.setKeyWidth(20);
     addAndMakeVisible(keyboardMonitor);
     
-    serialPortReader.addActionListener(&keyboardMonitor);
-
+    serialPortReader.addActionListener(this);
 }
 
 MainContentComponent::~MainContentComponent()
 {
     comboSerialDevice.stopThread(1000);
+    serialPortReader.stop();
 }
 
-void MainContentComponent::handleMessage(const Message &message)
+void MainContentComponent::actionListenerCallback(const String &message)
 {
-    
+    if (message == "SerialPortDied")
+    {
+	buttonStopGo.setButtonText("Go!");
+	labelSerialDevice.setEnabled(true);
+	comboSerialDevice.setEnabled(true);
+	labelSerialBaud.setEnabled(true);
+	comboSerialBaud.setEnabled(true);
+	serialPortReader.stop();
+	keyboardMonitor.clearKeys();
+	// TODO: Pop up a dialog saying the port died.
+    }
+    else
+    {
+	std::cout << "Got Message: " << message << std::endl;
+    }
 }
 
 void MainContentComponent::paint (Graphics& g)
@@ -118,17 +132,17 @@ void MainContentComponent::buttonClicked(Button *button)
     {
 	if (buttonStopGo.getToggleState()) 
 	{
-	    if (0 == serialPortReader.openSerialDevice(comboSerialDevice.getText(), comboSerialBaud.getSelectedId())) 
+	    if (0 == serialPortReader.start(comboSerialDevice.getText(), comboSerialBaud.getSelectedId())) 
 	    {
 		buttonStopGo.setButtonText("Stop!");
 		labelSerialDevice.setEnabled(false);
 		comboSerialDevice.setEnabled(false);
 		labelSerialBaud.setEnabled(false);
 		comboSerialBaud.setEnabled(false);
-		serialPortReader.startThread();
 	    }
 	    else
 	    {
+		// TODO: Pop up an error message.
 		buttonStopGo.setToggleState(false, dontSendNotification);
 	    }
 	} 
@@ -139,7 +153,7 @@ void MainContentComponent::buttonClicked(Button *button)
 	    comboSerialDevice.setEnabled(true);
 	    labelSerialBaud.setEnabled(true);
 	    comboSerialBaud.setEnabled(true);
-	    serialPortReader.stopThread(1000);
+	    serialPortReader.stop();
 	}
     }
 }

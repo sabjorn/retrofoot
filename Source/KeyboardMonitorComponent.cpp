@@ -32,6 +32,15 @@ void KeyboardMonitorComponent::drawBlackNote(int midiNoteNumber, Graphics &g, in
 void KeyboardMonitorComponent::setKeyPosition(int midiNoteNumber, float keyPosition)
 {
     keyGauge[midiNoteNumber] = keyPosition;
+    repaint();
+}
+
+void KeyboardMonitorComponent::clearKeys()
+{
+    for (uint32_t i = getRangeStart(); i <= getRangeEnd(); i++)
+    {
+	setKeyPosition(i, 0.0);
+    }
 }
 
 bool KeyboardMonitorComponent::mouseDownOnKey(int midiNoteNumber, const MouseEvent &e)
@@ -39,18 +48,6 @@ bool KeyboardMonitorComponent::mouseDownOnKey(int midiNoteNumber, const MouseEve
 
     return false;
 }
-
-void KeyboardMonitorComponent::actionListenerCallback(const String &message)
-{
-    int   key;
-    float pos;
-
-    key = (message.getIntValue() & 0xFFFF0000) >> 16;
-    pos = (float)((message.getIntValue() & 0x0000FFFF) / 100.0);
-
-    setKeyPosition(key, pos);
-    repaint();
-}	
 
 KeyboardMonitorComponent::~KeyboardMonitorComponent()
 {

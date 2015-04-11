@@ -1,33 +1,30 @@
 #include "SerialThread.h"
-#include <lo/lo.h>
-#include <iostream>
-
-
 
 SerialThread::SerialThread() 
-    : Thread("Serial Reader"),
-      sp(NULL)
+    : Thread("Serial Reader")
+#ifndef RETROFOOT_SERIAL_SIM
+    , sp(NULL)
+#endif
 {
-    
 }
 
 SerialThread::~SerialThread()
 {
-    if (NULL != sp)
-    {
-	sp_free_port(sp);
-    }
+    stop();
 }
 
-int SerialThread::openSerialDevice(const String &device, int baudRate)
+int SerialThread::start(const String &device, int baudRate)
 {
+#ifndef RETROFOOT_SERIAL_SIM
     sp_return rc;
 
+    // Get a port pointer by name
     rc = sp_get_port_by_name(device.toRawUTF8(), &sp);
 
     if ((SP_OK != rc) || (NULL == sp))
 	return -1;
 
+    // Try to open the port
     rc = sp_open(sp, SP_MODE_READ_WRITE);
 
     if (SP_OK != rc)
@@ -38,6 +35,49 @@ int SerialThread::openSerialDevice(const String &device, int baudRate)
 
     if (SP_OK != rc)
 	return -1;
+#else
+    File simFile("./serial_sim.dat");
+//    simData.setSize(simFile.getSize());
+    if (simFile.loadFileAsData(simData) == false)
+    {
+	return -1;
+    }
+#endif
+
+    // Reset the Parser
+    parser.reset();
+
+    // Start the thread object
+    startThread();
+
+    return 0;
+
+} 
+
+int SerialThread::stop()
+{
+#ifndef RETROFOOT_SERIAL_SIM
+    sp_return rc;
+
+    // Stop the thread
+    stopThread(1000);
+
+    // If the serial port is null, do nothing.
+    if (NULL == sp)
+    {
+	return -1;
+    }
+
+    // Close the port.
+    rc = sp_close(sp);
+
+    if (SP_OK != rc)
+	return -1;
+
+    sp_free_port(sp);
+
+    sp = NULL;
+#endif
 
     return 0;
 
@@ -45,34 +85,94 @@ int SerialThread::openSerialDevice(const String &device, int baudRate)
 
 void SerialThread::run()
 {
+    StringArray strArr;
+
+#ifndef RETROFOOT_SERIAL_SIM
+
     const size_t BUF_SIZE = 256;
+    uint8_t buf[BUF_SIZE];
 
-    char buf[BUF_SIZE];
-    char wbuf = ' ';
-
-    lo_address t = lo_address_new("192.168.1.128", "7777");
+    sp_return rc;
 
     while (!threadShouldExit()) 
     {
+	rc = sp_output_waiting(sp);
 
-	sp_blocking_write(sp, &wbuf, 1, 1000); 
-
-	if (sp_output_waiting(sp) > 0)
+	if (rc > 0)
 	{
-	    uint32_t nRead = sp_nonblocking_read(sp, buf, BUF_SIZE);
-	    for (uint32_t i = 0; i < nRead; i++)
-	    {
-		lo_send(t, "/test", "i", (int)buf[i]);
+	    rc = sp_nonblocking_read(sp, buf, BUF_SIZE);
 
-		int32_t msgVal = (i << 16) + buf[i];
-		
-		sendActionMessage(String(msgVal));
+	    if (rc > 0) 
+	    {
+		// do the thing
+		parser.parse(buf, rc, strArr);
+
+		for (uint32_t i = 0; i < strArr.size(); i++)
+		{
+		    sendActionMessage(strArr[i]);
+		}
+
+		strArr.clear();
 	    }
+	} 
+
+	// error happened
+	else if (rc < 0)
+	{
+	    sendActionMessage("SerialPortDied");
+	    stop();
 	}
+
 	// sleep a bit so the threads don't all grind the CPU to a halt..
 	wait (5);
     }
 
-    lo_address_free(t);
+#else
+    
+    // Random Number Generator (random Seed)
+    Random r;
+
+    // Get a random index to start from.
+    // Limit the value to the size of the memory block.
+    uint32_t idx = r.nextInt(simData.getSize());
+    uint32_t numBytes = 0;
+
+    while (!threadShouldExit()) 
+    {
+	// Generate a random number of bytes to read.
+	// A 5ms timer should give 57.6 bytes on average. 
+	// Lets set the max to 115. 
+	numBytes = r.nextInt(115);
+	
+	// If there are fewer than numBytes bytes left in the buffer
+	// just return the bytes in the buffer. This will appear random-ish when it occurs.
+	if ((simData.getSize() - idx) < numBytes)
+	{
+	    numBytes = simData.getSize() - idx;
+	} 
+
+	// Call the parser
+	parser.parse(&(((uint8_t *)simData.getData())[idx]), numBytes, strArr);
+	
+	// Move the idx
+	idx = (idx + numBytes) % simData.getSize();
+
+	// do the thing
+
+	for (uint32_t i = 0; i < strArr.size(); i++)
+	{
+	    sendActionMessage(strArr[i]);
+	}
+	
+	strArr.clear();
+
+	// sleep a bit so the threads don't all grind the CPU to a halt..
+	wait (5);
+    }
+
+    std::cout << "Exiting..." << std::endl;
+
+
+#endif
 
 }
