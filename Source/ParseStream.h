@@ -15,13 +15,13 @@ class ParseStream
 public:
 	//==============================================================================
 	ParseStream();
-	~ParseStrea();
+	~ParseStream();
 
-	void parse(char *buf, uint32_t size, StringArray &strArr); //parse
+	void parse(uint8_t *buf, uint32_t size, StringArray &strArr); //parse
 	void reset(); //reset object without need to kill/resurect object
 
 private:
-	bool state; //1 if inframe
+	uint8_t frame_state; //1 if inframe
 	uint8_t header_state; //store counter info
 
 
