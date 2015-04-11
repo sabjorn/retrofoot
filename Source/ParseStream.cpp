@@ -39,9 +39,7 @@ void parse(char *buf, uint32_t size, StringArray &strArr) //parse
 
 			unsigned short current_channel = ((buf[i] >> 10) & 0x1F) + (channel_offset * 32); //current channel
 			unsigned short current_value = (merge_bytes & 0x3FF);
-			strArr.add('AK');
-			strArr.add(String(current_channel));
-			strArr.add(String(current_value));
+			strArr.add(String('AK')+String(current_channel)+String(current_value));
 		}
 	}
 
