@@ -37,7 +37,6 @@ int SerialThread::start(const String &device, int baudRate)
 	return -1;
 #else
     File simFile("./serial_sim.dat");
-//    simData.setSize(simFile.getSize());
     if (simFile.loadFileAsData(simData) == false)
     {
 	return -1;
@@ -58,10 +57,11 @@ int SerialThread::stop()
 {
 #ifndef RETROFOOT_SERIAL_SIM
     sp_return rc;
-
+#endif
     // Stop the thread
     stopThread(1000);
 
+#ifndef RETROFOOT_SERIAL_SIM
     // If the serial port is null, do nothing.
     if (NULL == sp)
     {
@@ -169,9 +169,6 @@ void SerialThread::run()
 	// sleep a bit so the threads don't all grind the CPU to a halt..
 	wait (5);
     }
-
-    std::cout << "Exiting..." << std::endl;
-
 
 #endif
 
