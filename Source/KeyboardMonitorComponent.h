@@ -19,6 +19,7 @@ public:
     ~KeyboardMonitorComponent();
 
     void clearKeys();
+    void setKeyPosition(int midiNoteNumber, float keyPosition);
     
 private:
 
@@ -27,7 +28,6 @@ private:
     void drawBlackNote(int midiNoteNumber, Graphics &g, int x, int y, int w, int h, bool isDown, bool isOver, const Colour &noteFillColour);
     String getWhiteNoteText(const int midiNoteNumber) { return String::empty; };
     bool mouseDownOnKey(int midiNoteNumber, const MouseEvent &e);
-    void setKeyPosition(int midiNoteNumber, float keyPosition);
 
     float *keyGauge;
 

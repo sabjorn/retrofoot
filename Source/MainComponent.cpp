@@ -118,7 +118,12 @@ void MainContentComponent::actionListenerCallback(const String &message)
     }
     else
     {
-	std::cout << "Got Message: " << message << std::endl;
+	StringArray tokens = StringArray::fromTokens(message, true);
+
+	if (tokens[0] == "AK") // key message
+	{
+	    keyboardMonitor.setKeyPosition(tokens[2].getIntValue(), tokens[3].getIntValue()/1024.0);
+	}
     }
 }
 
