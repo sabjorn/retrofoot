@@ -7,6 +7,7 @@ ParseStream::ParseStream()
 {
 	frame_state = OUT_OF_FRAME;
 	header_state = 0;
+    merge_bytes = 0;
 }
 
 ParseStream::~ParseStream()
@@ -73,8 +74,6 @@ void ParseStream::parse(uint8_t *buf, uint32_t size, StringArray &strArr) //pars
 
     for(uint16_t i = 0; i < size; i++)
     {
-        uint16_t merge_bytes; //store MSB and LSB
-
         switch(frame_state){
             case OUT_OF_FRAME:
                 if (0xFF == buf[i]){
@@ -137,6 +136,7 @@ void ParseStream::parse(uint8_t *buf, uint32_t size, StringArray &strArr) //pars
 
 void ParseStream::reset() //reset object without need to kill/resurect object
 {
-	frame_state = 0; //if found a frame to sync up to
-	header_state = 0; // count offsef for frame_state.
+	frame_state = OUT_OF_FRAME;
+	header_state = 0;
+    merge_bytes = 0;
 }

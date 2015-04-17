@@ -23,6 +23,7 @@ public:
 private:
 	uint8_t frame_state; //1 if inframe
 	uint8_t header_state; //store counter info
+	uint16_t merge_bytes; //store MSB and LSB
 	uint8_t num_channels; //total number of channels
     uint8_t channel_offset; // current channel offset
     unsigned short current_channel; //current channel
