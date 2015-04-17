@@ -5,7 +5,7 @@
 
 ParseStream::ParseStream()
 {
-	frame_state = 0;
+	frame_state = OUT_OF_FRAME;
 	header_state = 0;
 }
 
@@ -71,33 +71,64 @@ void ParseStream::parse(uint8_t *buf, uint32_t size, StringArray &strArr) //pars
     //
     // I think this solves all corner cases I can think of so far. 
 
-	uint16_t i = 0;  
+    for(uint16_t i = 0; i < size; i++)
+    {
+        uint16_t merge_bytes; //store MSB and LSB
 
-	if (0 == frame_state)
-	{
-		for(i = 0; (i < size) && 0 == frame_state; i++)
-		{
-			// Find beginning of stream
-			if((i + 1 < size) && (buf[i] == 0xFF) && (buf[i+1] == 0xFF))
-			{
-				frame_state = 1;
-			}
-		}
-	}
-	if (frame_state)
-	{
-		header_state = buf[i]; //store header
-		i++;
+        switch(frame_state){
+            case OUT_OF_FRAME:
+                if (0xFF == buf[i]){
+                    frame_state = PRESYNC;
+                }
+                else{
+                    frame_state = OUT_OF_FRAME; // superflouous, already in this state.
+                }
+                break;
 
-		for(; (i < size) && frame_state; i += 2) //add 2 because each two-byte chunks
-		{
-		    uint8_t channel_offset = (header_state & 0x0F); // + 1;
-			
-			uint16_t merge_bytes = ((buf[i] << 8) | buf[i+1]); //merge bytes
+            case PRESYNC:
+                if (0xFF == buf[i]){
+                    frame_state = READ_HEADER;
+                }
+                else{
+                    frame_state = OUT_OF_FRAME; // superflouous, already in this state.
+                    strArr.add(String("OUT_OF_FRAME!"));
+                }
+                break;
 
-			unsigned short current_channel = ((merge_bytes >> 10) & 0x1F) + (channel_offset * 32); //current channel
-			unsigned short current_value = (merge_bytes & 0x3FF);
-			strArr.add(String("AK ")+String(current_channel)+String(" ")+String(current_value));
+            case READ_HEADER:
+                header_state = buf[i];
+                //make sure valid header state
+                if (0xFF != header_state){
+                    frame_state = READ_MSB;
+                }
+                break;
+
+            case READ_MSB:
+                if (0xFF != header_state){
+                    frame_state = READ_LSB;
+                    merge_bytes = ((buf[i] << 8));
+                }
+                else
+                {
+                    frame_state = PRESYNC;
+                }
+                break;
+
+            case READ_LSB:
+                header_state = READ_MSB;
+                merge_bytes |= buf[i];
+
+                num_channels = (header_state >> 4); //total number of channels
+                channel_offset = (header_state & 0x0F); // current channel offset
+                current_channel = ((merge_bytes >> 10) & 0x1F) + (channel_offset * 32); //current channel
+                current_value = (merge_bytes & 0x3FF); // current value
+
+                strArr.add(String("AK ")+String(num_channels)+String(" ")+String(current_channel)+String(" ")+String(current_value)); //return string array
+                break;
+  
+            /* you can have any number of case statements */
+            default : /* Optional */
+               frame_state = OUT_OF_FRAME;
 		}
 	}
 
