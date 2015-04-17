@@ -104,9 +104,10 @@ void ParseStream::parse(uint8_t *buf, uint32_t size, StringArray &strArr) //pars
                 break;
 
             case READ_MSB:
-                if (0xFF != header_state){
+                if (0xFF != buf[i]){
                     frame_state = READ_LSB;
                     merge_bytes = ((buf[i] << 8));
+		    std::cout << std::hex << "channel: " << (merge_bytes >> 10) << std::endl;
                 }
                 else
                 {
@@ -115,14 +116,19 @@ void ParseStream::parse(uint8_t *buf, uint32_t size, StringArray &strArr) //pars
                 break;
 
             case READ_LSB:
-                header_state = READ_MSB;
+                frame_state = READ_MSB;
                 merge_bytes |= buf[i];
 
                 num_channels = (header_state >> 4); //total number of channels
                 channel_offset = (header_state & 0x0F); // current channel offset
                 current_channel = ((merge_bytes >> 10) & 0x1F) + (channel_offset * 32); //current channel
+		std::cout << std::hex << "channel: " << current_channel << std::endl;
                 current_value = (merge_bytes & 0x3FF); // current value
 
+		if (current_channel == 0)
+		{
+		    std::cout << "Channel was 0.." << std::endl;
+		}
                 strArr.add(String("AK ")+String(num_channels)+String(" ")+String(current_channel)+String(" ")+String(current_value)); //return string array
                 break;
   
