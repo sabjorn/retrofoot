@@ -98,7 +98,7 @@ void SerialThread::run()
     {
 	rc = sp_output_waiting(sp);
 
-	if (rc > 0)
+	if (rc >= 0)
 	{
 	    rc = sp_nonblocking_read(sp, buf, BUF_SIZE);
 
