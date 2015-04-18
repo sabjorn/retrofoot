@@ -80,13 +80,6 @@ MainContentComponent::MainContentComponent()
     
     textOSCPort.setBounds(310, y, 60, 20);
     addAndMakeVisible(textOSCPort);
-//
-//    y += 25;
-//
-//    // Serial Port Setup
-//    groupMode.setBounds(10,y,xSize-10,100);
-//    addAndMakeVisible(groupMode);
-//
 
     y += 45;
 
@@ -95,6 +88,13 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(keyboardMonitor);
     
     serialPortReader.addActionListener(this);
+
+    // Initialize calibration table
+    for (uint32_t i = 0; i < 32; i++) 
+    {
+	keyMax[i] = 1024;
+	keyMin[i] = 0;
+    }
 }
 
 MainContentComponent::~MainContentComponent()
@@ -124,7 +124,11 @@ void MainContentComponent::actionListenerCallback(const String &message)
     }
     else if (tokens[0] == "AK") // Key message
     {
-	keyboardMonitor.setKeyPosition(tokens[2].getIntValue(), tokens[3].getIntValue()/1024.0);
+	String oscEndpoint = String("/retrofoot/") + tokens[2];
+	float calibratedValue = getCalibratedValue(tokens[2].getIntValue(), tokens[3].getIntValue());
+
+	lo_send(oscAddress, oscEndpoint.toRawUTF8(), "f", calibratedValue);  
+	keyboardMonitor.setKeyPosition(tokens[2].getIntValue(), calibratedValue);
     }
     else
     {
@@ -142,6 +146,8 @@ void MainContentComponent::buttonClicked(Button *button)
     {
 	if (buttonStopGo.getToggleState()) 
 	{
+	    oscAddress = lo_address_new(textOSCHost.getText().toRawUTF8(), textOSCPort.getText().toRawUTF8());
+
 	    if (0 == serialPortReader.start(comboSerialDevice.getText(), comboSerialBaud.getSelectedId())) 
 	    {
 		buttonStopGo.setButtonText("Stop!");
@@ -154,6 +160,7 @@ void MainContentComponent::buttonClicked(Button *button)
 	    {
 		// TODO: Pop up an error message.
 		buttonStopGo.setToggleState(false, dontSendNotification);
+		lo_address_free(oscAddress);
 	    }
 	} 
 	else 
@@ -173,4 +180,19 @@ void MainContentComponent::resized()
     // This is called when the MainContentComponent is resized.
     // If you add any child components, this is where you should
     // update their positions.
+}
+
+float MainContentComponent::getCalibratedValue(uint32_t keyIdx, uint32_t keyValue)
+{
+    if (keyValue < keyMin[keyIdx])
+    {
+	return 0.0;
+    }
+
+    if (keyValue > keyMax[keyIdx])
+    {
+	return 1.0;
+    }
+
+    return ((float)(keyValue - keyMin[keyIdx]) / (float)(keyMax[keyIdx] - keyMin[keyIdx]));
 }

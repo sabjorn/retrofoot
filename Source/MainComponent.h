@@ -13,6 +13,7 @@
 #include "SerialThread.h"
 #include "SerialDeviceChooser.h"
 #include "KeyboardMonitorComponent.h"
+#include "lo/lo.h"
 
 //==============================================================================
 /*
@@ -34,6 +35,8 @@ public:
     void actionListenerCallback(const String& message);
 
 private:
+
+    float getCalibratedValue(uint32_t keyIdx, uint32_t keyValue);
 
     // Constants
     static const uint32_t xSize = 400;
@@ -59,6 +62,13 @@ private:
 
     // Monitor Stuff
     KeyboardMonitorComponent keyboardMonitor;
+
+    // OSC sender
+    lo_address oscAddress;
+
+    // Calibration Stuff
+    uint32_t keyMax[32];
+    uint32_t keyMin[32];
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
