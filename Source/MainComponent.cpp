@@ -105,7 +105,9 @@ MainContentComponent::~MainContentComponent()
 
 void MainContentComponent::actionListenerCallback(const String &message)
 {
-    if (message == "SerialPortDied")
+    StringArray tokens = StringArray::fromTokens(message, true);
+
+    if (tokens[0] == "SerialPortDied") // Serial Port Error
     {
 	buttonStopGo.setButtonText("Go!");
 	labelSerialDevice.setEnabled(true);
@@ -116,14 +118,17 @@ void MainContentComponent::actionListenerCallback(const String &message)
 	keyboardMonitor.clearKeys();
 	// TODO: Pop up a dialog saying the port died.
     }
+    else if (tokens[0] == "OUT_OF_FRAME!") // Lost frame sync.
+    {
+	std::cout << "Lost Frame Sync!" << std::endl;
+    }
+    else if (tokens[0] == "AK") // Key message
+    {
+	keyboardMonitor.setKeyPosition(tokens[2].getIntValue(), tokens[3].getIntValue()/1024.0);
+    }
     else
     {
-	StringArray tokens = StringArray::fromTokens(message, true);
-
-	if (tokens[0] == "AK") // key message
-	{
-	    keyboardMonitor.setKeyPosition(tokens[2].getIntValue(), tokens[3].getIntValue()/1024.0);
-	}
+	std::cout << "Received unknown message: " << message << std::endl;
     }
 }
 
