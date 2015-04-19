@@ -5,6 +5,10 @@
               jucerVersion="3.1.0">
   <MAINGROUP id="FYRgwK" name="retrofoot">
     <GROUP id="{5F1EFCF4-0626-E490-E53A-498FE85CA886}" name="Source">
+      <FILE id="u3NXRJ" name="KeyCalibrationDialog.cpp" compile="1" resource="0"
+            file="Source/KeyCalibrationDialog.cpp"/>
+      <FILE id="ZCCtOp" name="KeyCalibrationDialog.h" compile="0" resource="0"
+            file="Source/KeyCalibrationDialog.h"/>
       <FILE id="KQ9XX7" name="ParseStream.cpp" compile="1" resource="0" file="Source/ParseStream.cpp"/>
       <FILE id="ElJK7b" name="ParseStream.h" compile="0" resource="0" file="Source/ParseStream.h"/>
       <FILE id="iLWdqr" name="KeyboardMonitorComponent.cpp" compile="1" resource="0"

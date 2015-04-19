@@ -7,6 +7,7 @@
 */
 
 #include "MainComponent.h"
+#include "KeyCalibrationDialog.h"
 
 
 //==============================================================================
@@ -85,6 +86,7 @@ MainContentComponent::MainContentComponent()
 
     keyboardMonitor.setBounds(10, y, xSize-20, 70);
     keyboardMonitor.setKeyWidth(20);
+    keyboardMonitor.addActionListener(this);
     addAndMakeVisible(keyboardMonitor);
     
     serialPortReader.addActionListener(this);
@@ -129,6 +131,12 @@ void MainContentComponent::actionListenerCallback(const String &message)
 
 	lo_send(oscAddress, oscEndpoint.toRawUTF8(), "f", calibratedValue);  
 	keyboardMonitor.setKeyPosition(tokens[2].getIntValue(), calibratedValue);
+    }
+    else if (tokens[0] == "CK") // Calibrate key
+    {
+	KeyCalibrationDialog kcd(32, keyMax, keyMin);
+
+	DialogWindow::showModalDialog("Calibrate Keys", &kcd, this, Colour(0,0,0), true);
     }
     else
     {

@@ -45,6 +45,7 @@ void KeyboardMonitorComponent::clearKeys()
 
 bool KeyboardMonitorComponent::mouseDownOnKey(int midiNoteNumber, const MouseEvent &e)
 {
+    sendActionMessage("CK " + String(midiNoteNumber));
 
     return false;
 }

@@ -10,7 +10,8 @@
     your controls and content.
 */
 
-class KeyboardMonitorComponent : public MidiKeyboardComponent
+class KeyboardMonitorComponent : public MidiKeyboardComponent,
+                                 public ActionBroadcaster
 {
 
 public:
