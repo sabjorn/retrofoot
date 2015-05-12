@@ -97,12 +97,16 @@ MainContentComponent::MainContentComponent()
 	keyMax[i] = 1024;
 	keyMin[i] = 0;
     }
+
+    kcd = new KeyCalibrationDialog(32, keyMax, keyMin);
+
 }
 
 MainContentComponent::~MainContentComponent()
 {
     comboSerialDevice.stopThread(1000);
     serialPortReader.stop();
+    delete kcd;
 }
 
 void MainContentComponent::actionListenerCallback(const String &message)
@@ -129,14 +133,13 @@ void MainContentComponent::actionListenerCallback(const String &message)
 	String oscEndpoint = String("/retrofoot/") + tokens[2];
 	float calibratedValue = getCalibratedValue(tokens[2].getIntValue(), tokens[3].getIntValue());
 
-	lo_send(oscAddress, oscEndpoint.toRawUTF8(), "f", calibratedValue);  
+/*	lo_send(oscAddress, oscEndpoint.toRawUTF8(), "f", calibratedValue);*/  
 	keyboardMonitor.setKeyPosition(tokens[2].getIntValue(), calibratedValue);
+	kcd->setKeyValue(tokens[2].getIntValue(), tokens[3].getIntValue());
     }
     else if (tokens[0] == "CK") // Calibrate key
     {
-	KeyCalibrationDialog kcd(32, keyMax, keyMin);
-
-	DialogWindow::showModalDialog("Calibrate Keys", &kcd, this, Colour(0,0,0), true);
+	DialogWindow::showModalDialog("Calibrate Keys", kcd, this, Colour(0,0,0), true);
     }
     else
     {

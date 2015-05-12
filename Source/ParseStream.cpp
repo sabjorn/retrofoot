@@ -8,6 +8,7 @@ ParseStream::ParseStream()
 	frame_state = OUT_OF_FRAME;
 	header_state = 0;
     merge_bytes = 0;
+    bytecnt = 0;
 }
 
 ParseStream::~ParseStream()
@@ -91,7 +92,9 @@ void ParseStream::parse(uint8_t *buf, uint32_t size, StringArray &strArr) //pars
                 else{
                     frame_state = OUT_OF_FRAME; // superflouous, already in this state.
                     strArr.add(String("OUT_OF_FRAME!"));
+		    std::cout << bytecnt << std::endl;
                 }
+		bytecnt = 0;
                 break;
 
             case READ_HEADER:
@@ -126,9 +129,11 @@ void ParseStream::parse(uint8_t *buf, uint32_t size, StringArray &strArr) //pars
                 break;
   
             /* you can have any number of case statements */
-            default : /* Optional */
-               frame_state = OUT_OF_FRAME;
-		}
+	    default : /* Optional */
+		frame_state = OUT_OF_FRAME;
+	}
+
+	bytecnt++;
 	}
 
 

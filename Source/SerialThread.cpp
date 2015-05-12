@@ -35,6 +35,8 @@ int SerialThread::start(const String &device, int baudRate)
 
     if (SP_OK != rc)
 	return -1;
+
+    setPriority(10);
 #else
     File simFile("./serial_sim.dat");
     if (simFile.loadFileAsData(simData) == false)
@@ -89,7 +91,7 @@ void SerialThread::run()
 
 #ifndef RETROFOOT_SERIAL_SIM
 
-    const size_t BUF_SIZE = 256;
+    const size_t BUF_SIZE = 2048;
     uint8_t buf[BUF_SIZE];
 
     sp_return rc;

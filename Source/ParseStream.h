@@ -31,6 +31,8 @@ private:
 	enum States {OUT_OF_FRAME, PRESYNC, READ_HEADER, READ_MSB, READ_LSB}; // states
 
 
+	uint32_t bytecnt;
+
 	//==============================================================================
 };
 

@@ -36,6 +36,7 @@ KeyCalibrationDialog::KeyCalibrationDialog(uint32_t numKeys, uint32_t *minValues
 
 	if (NULL != minValues && NULL != maxValues)
 	{
+	    sliderCalib[i]->setRange(0,1024);
 	    sliderCalib[i]->setMinAndMaxValues(minValues[i], maxValues[i], dontSendNotification);
 	}
 
@@ -68,6 +69,28 @@ KeyCalibrationDialog::~KeyCalibrationDialog()
 
 }
 
+void KeyCalibrationDialog::setKeyValue(int key, int value)
+{
+    if (buttonCalib[key]->getToggleState())
+    {
+	if (value < pMinValues[key])
+	{
+	    sliderCalib[key]->setMinValue(value, dontSendNotification);
+	    pMinValues[key] = value;
+	}
+
+	if (value > pMaxValues[key])
+	{
+	    sliderCalib[key]->setMaxValue(value, dontSendNotification);
+	    pMaxValues[key] = value;
+	}
+
+    }
+
+    sliderCalib[key]->setValue(value);
+
+}
+
 void KeyCalibrationDialog::paint (Graphics& g)
 {
     /* This demo code just fills the component's background and
@@ -97,14 +120,14 @@ void KeyCalibrationDialog::resized()
 
 void KeyCalibrationDialog::sliderValueChanged (Slider *slider)
 {
-    if (NULL != pMaxValues && NULL != pMinValues)
+/*    if (NULL != pMaxValues && NULL != pMinValues)
     {
 	for (uint32_t i = 0; i < nKeys; i++)
 	{
 	    pMaxValues[i] = sliderCalib[i]->getMaxValue();
 	    pMinValues[i] = sliderCalib[i]->getMinValue();
 	}
-    }
+	}*/
 }
 
 void KeyCalibrationDialog::buttonClicked (Button *button)
@@ -114,6 +137,18 @@ void KeyCalibrationDialog::buttonClicked (Button *button)
 	for (uint32_t i = 0; i < nKeys; i++)
 	{
 	    buttonCalib[i]->setToggleState(buttonCalibAll.getToggleState(), dontSendNotification);
+	}
+    } 
+    else
+    {
+	for (uint32_t i = 0; i < nKeys; i++)
+	{
+	    if (button == buttonCalib[i] && buttonCalib[i]->getToggleState())
+	    {
+		pMaxValues[i] = 512;
+		pMinValues[i] = 512;
+                sliderCalib[i]->setMinAndMaxValues(512, 512, dontSendNotification);
+	    }
 	}
     }
 }

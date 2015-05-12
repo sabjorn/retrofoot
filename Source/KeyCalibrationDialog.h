@@ -31,6 +31,8 @@ public:
     void sliderValueChanged (Slider *slider);
     void buttonClicked(Button *button);
 
+    void setKeyValue(int key, int value);
+
 private:
 
     Slider **sliderCalib;

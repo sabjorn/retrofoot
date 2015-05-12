@@ -13,6 +13,7 @@
 #include "SerialThread.h"
 #include "SerialDeviceChooser.h"
 #include "KeyboardMonitorComponent.h"
+#include "KeyCalibrationDialog.h"
 #include "lo/lo.h"
 
 //==============================================================================
@@ -67,6 +68,7 @@ private:
     lo_address oscAddress;
 
     // Calibration Stuff
+    KeyCalibrationDialog *kcd;
     uint32_t keyMax[32];
     uint32_t keyMin[32];
 
