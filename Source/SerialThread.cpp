@@ -1,5 +1,35 @@
 #include "SerialThread.h"
 
+/* HACK!! */
+#include <termios.h>
+struct sp_port {
+	char *name;
+	char *description;
+	enum sp_transport transport;
+	int usb_bus;
+	int usb_address;
+	int usb_vid;
+	int usb_pid;
+	char *usb_manufacturer;
+	char *usb_product;
+	char *usb_serial;
+	char *bluetooth_address;
+#ifdef _WIN32
+	char *usb_path;
+	HANDLE hdl;
+	COMMTIMEOUTS timeouts;
+	OVERLAPPED write_ovl;
+	OVERLAPPED read_ovl;
+	OVERLAPPED wait_ovl;
+	DWORD events;
+	BYTE pending_byte;
+	BOOL writing;
+	BOOL wait_running;
+#else
+	int fd;
+#endif
+};
+
 SerialThread::SerialThread() 
     : Thread("Serial Reader")
 #ifndef RETROFOOT_SERIAL_SIM
@@ -17,7 +47,9 @@ int SerialThread::start(const String &device, int baudRate)
 {
 #ifndef RETROFOOT_SERIAL_SIM
     sp_return rc;
-
+    sp_port_config *cfg;
+    termios t;
+    
     // Get a port pointer by name
     rc = sp_get_port_by_name(device.toRawUTF8(), &sp);
 
@@ -35,6 +67,13 @@ int SerialThread::start(const String &device, int baudRate)
 
     if (SP_OK != rc)
 	return -1;
+
+    // Set raw mode using low-level termios stuff (HACK!!!)
+    tcgetattr(sp->fd, &t);
+    cfmakeraw(&t);
+    if (0 != tcsetattr(sp->fd, TCSANOW, &t))
+	return -1;
+
 #else
     File simFile("./serial_sim.dat");
     if (simFile.loadFileAsData(simData) == false)
