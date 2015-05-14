@@ -98,7 +98,7 @@ MainContentComponent::MainContentComponent()
 	keyMin[i] = 0;
     }
 
-    kcd = new KeyCalibrationDialog(32, keyMax, keyMin);
+    kcd = new KeyCalibrationDialog(32, keyMin, keyMax);
 
 }
 
@@ -133,7 +133,7 @@ void MainContentComponent::actionListenerCallback(const String &message)
 	String oscEndpoint = String("/retrofoot/") + tokens[2];
 	float calibratedValue = getCalibratedValue(tokens[2].getIntValue(), tokens[3].getIntValue());
 
-/*	lo_send(oscAddress, oscEndpoint.toRawUTF8(), "f", calibratedValue);*/  
+	lo_send(oscAddress, oscEndpoint.toRawUTF8(), "f", calibratedValue);
 	keyboardMonitor.setKeyPosition(tokens[2].getIntValue(), calibratedValue);
 	kcd->setKeyValue(tokens[2].getIntValue(), tokens[3].getIntValue());
     }

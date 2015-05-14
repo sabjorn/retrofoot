@@ -45,6 +45,7 @@ KeyCalibrationDialog::KeyCalibrationDialog(uint32_t numKeys, uint32_t *minValues
 	buttonCalib[i] = new TextButton(notes[i%12]);
 	buttonCalib[i]->setBounds(30*i, 400, 25, 20);
 	buttonCalib[i]->setClickingTogglesState(true);
+	buttonCalib[i]->addListener(this);
 	addAndMakeVisible(buttonCalib[i]);
     }
 
@@ -77,12 +78,20 @@ void KeyCalibrationDialog::setKeyValue(int key, int value)
 	{
 	    sliderCalib[key]->setMinValue(value, dontSendNotification);
 	    pMinValues[key] = value;
+	    if (pMaxValues[key] == value)
+	    {
+		pMaxValues[key] = value + 1;
+	    }
 	}
 
 	if (value > pMaxValues[key])
 	{
 	    sliderCalib[key]->setMaxValue(value, dontSendNotification);
 	    pMaxValues[key] = value;
+	    if (pMinValues[key] == value)
+	    {
+		pMinValues[key] = value - 1;
+	    }
 	}
 
     }
@@ -136,7 +145,7 @@ void KeyCalibrationDialog::buttonClicked (Button *button)
     {
 	for (uint32_t i = 0; i < nKeys; i++)
 	{
-	    buttonCalib[i]->setToggleState(buttonCalibAll.getToggleState(), dontSendNotification);
+	    buttonCalib[i]->setToggleState(buttonCalibAll.getToggleState(), sendNotification);
 	}
     } 
     else
@@ -145,8 +154,8 @@ void KeyCalibrationDialog::buttonClicked (Button *button)
 	{
 	    if (button == buttonCalib[i] && buttonCalib[i]->getToggleState())
 	    {
-		pMaxValues[i] = 512;
-		pMinValues[i] = 512;
+		pMaxValues[i] = 0;
+		pMinValues[i] = 1024;
                 sliderCalib[i]->setMinAndMaxValues(512, 512, dontSendNotification);
 	    }
 	}
