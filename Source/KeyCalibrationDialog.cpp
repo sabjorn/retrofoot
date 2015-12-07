@@ -23,7 +23,7 @@ KeyCalibrationDialog::KeyCalibrationDialog(uint32_t numKeys, uint32_t *minValues
 
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
-    setSize(numKeys*30,450);
+    setSize((numKeys+1)*20,350);
 
     sliderCalib = new Slider*[numKeys];
     buttonCalib = new Button*[numKeys];
@@ -32,7 +32,7 @@ KeyCalibrationDialog::KeyCalibrationDialog(uint32_t numKeys, uint32_t *minValues
     {
 	sliderCalib[i] = new Slider();
 	sliderCalib[i]->setSliderStyle(Slider::ThreeValueVertical);
-	sliderCalib[i]->setBounds(30*i, 0, 30,400);
+	sliderCalib[i]->setBounds(20*i+10, 10, 20, 270);
 	sliderCalib[i]->setInterceptsMouseClicks(false, false);
 	addAndMakeVisible(sliderCalib[i]);
 
@@ -45,14 +45,28 @@ KeyCalibrationDialog::KeyCalibrationDialog(uint32_t numKeys, uint32_t *minValues
 	sliderCalib[i]->addListener(this);
 
 	buttonCalib[i] = new TextButton(notes[i%12]);
-	buttonCalib[i]->setBounds(30*i, 400, 25, 20);
+	buttonCalib[i]->setBounds(20*i+10, 290, 20, 20);
 	buttonCalib[i]->setClickingTogglesState(true);
+
+	if (i == 0)
+	{
+	    buttonCalib[i]->setConnectedEdges(Button::ConnectedOnRight);
+	}
+	else if (i == 31)
+	{
+	    buttonCalib[i]->setConnectedEdges(Button::ConnectedOnLeft);
+	}
+	else
+	{
+	    buttonCalib[i]->setConnectedEdges(Button::ConnectedOnLeft | Button::ConnectedOnRight);
+	}
+
 	buttonCalib[i]->addListener(this);
 	addAndMakeVisible(buttonCalib[i]);
     }
 
     buttonCalibAll.setButtonText("Calibrate All");
-    buttonCalibAll.setBounds(30*nKeys/2-50,425,100,20);
+    buttonCalibAll.setBounds((20*(nKeys+1))/2-50,320,100,20);
     buttonCalibAll.setClickingTogglesState(true);
     buttonCalibAll.addListener(this);
     addAndMakeVisible(buttonCalibAll);
@@ -116,15 +130,9 @@ void KeyCalibrationDialog::paint (Graphics& g)
        drawing code..
     */
 
-    g.fillAll (Colours::white);   // clear the background
+    g.fillAll (Colours::lightgrey);   // clear the background
 
-    g.setColour (Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
 
-    g.setColour (Colours::lightblue);
-    g.setFont (14.0f);
-    g.drawText ("KeyCalibrationDialog", getLocalBounds(),
-                Justification::centred, true);   // draw some placeholder text
 }
 
 void KeyCalibrationDialog::resized()
