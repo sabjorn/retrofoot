@@ -9,13 +9,14 @@
 #include "MainComponent.h"
 #include "KeyCalibrationDialog.h"
 
+ApplicationProperties& getAppProperties();
 
 //==============================================================================
 MainContentComponent::MainContentComponent()
     : groupSerialSetup(String::empty, "Serial Port Setup"),
       groupMode(String::empty, "Mode"),
       labelSerialDevice(String::empty, "Device:"),
-      labelSerialBaud(String::empty, "Baud Rate:"),
+//      labelSerialBaud(String::empty, "Baud Rate:"),
       buttonStopGo("Go!"),
       labelOSCHost(String::empty, "OSC Host:"),
       labelOSCPort(String::empty, "Port:"),
@@ -26,7 +27,7 @@ MainContentComponent::MainContentComponent()
     setSize (xSize, ySize);
 
     // Serial Port Setup
-    groupSerialSetup.setBounds(10,y,xSize-20,75);
+    groupSerialSetup.setBounds(10,y,xSize-20,55);
     addAndMakeVisible(groupSerialSetup);
 
     y += 20;
@@ -39,28 +40,30 @@ MainContentComponent::MainContentComponent()
     comboSerialDevice.startThread();
 
     // Stop-go button
-    buttonStopGo.setBounds(310, y, 60, 40);
+    buttonStopGo.setBounds(310, y, 60, 20);
     addAndMakeVisible(buttonStopGo);
     buttonStopGo.setClickingTogglesState(true);
     buttonStopGo.addListener(this);
 
     y += 20;
 
-    labelSerialBaud.setBounds(21, y, 100, 20);
-    addAndMakeVisible(labelSerialBaud);
+//    labelSerialBaud.setBounds(21, y, 100, 20);
+//    addAndMakeVisible(labelSerialBaud);
 
-    comboSerialBaud.setBounds(100, y, 200, 20);
-    addAndMakeVisible(comboSerialBaud);
-    comboSerialBaud.addItem("2400", 2400); 	
-    comboSerialBaud.addItem("4800", 4800); 	
-    comboSerialBaud.addItem("9600", 9600); 	
-    comboSerialBaud.addItem("19200", 19200);	
-    comboSerialBaud.addItem("38400", 38400); 	
-    comboSerialBaud.addItem("57600", 57600); 	
-    comboSerialBaud.addItem("115200", 115200);
-    comboSerialBaud.setSelectedId(115200);
+//    comboSerialBaud.setBounds(100, y, 200, 20);
+//    addAndMakeVisible(comboSerialBaud);
+//    comboSerialBaud.addItem("2400", 2400); 	
+//    comboSerialBaud.addItem("4800", 4800); 	
+//    comboSerialBaud.addItem("9600", 9600); 	
+//    comboSerialBaud.addItem("19200", 19200);	
+//    comboSerialBaud.addItem("38400", 38400); 	
+//    comboSerialBaud.addItem("57600", 57600); 	
+//    comboSerialBaud.addItem("115200", 115200);
+//    comboSerialBaud.setSelectedId(115200);
 
-    y += 45;
+//    y += 45;
+
+    y += 20;
 
     // Serial Port Setup
     groupMode.setBounds(10,y,xSize-20,55);
@@ -73,6 +76,8 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(labelOSCHost);
 
     textOSCHost.setBounds(100, y, 150, 20);
+    textOSCHost.setText(getAppProperties().getUserSettings()->getValue("oschost", "localhost"));
+    textOSCHost.addListener(this);
     addAndMakeVisible(textOSCHost);
 
     // OSC Port Setting
@@ -80,9 +85,11 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(labelOSCPort);
     
     textOSCPort.setBounds(310, y, 60, 20);
+    textOSCPort.setText(getAppProperties().getUserSettings()->getValue("oscport", "2112"));
+    textOSCPort.addListener(this);
     addAndMakeVisible(textOSCPort);
 
-    y += 45;
+    y += 47;
 
     keyboardMonitor.setBounds(10, y, xSize-20, 70);
     keyboardMonitor.setKeyWidth(20);
@@ -94,8 +101,10 @@ MainContentComponent::MainContentComponent()
     // Initialize calibration table
     for (uint32_t i = 0; i < 32; i++) 
     {
-	keyMax[i] = 1024;
-	keyMin[i] = 0;
+//	keyMax[i] = 1024;
+//	keyMin[i] = 0;
+	keyMax[i] = getAppProperties().getUserSettings()->getIntValue(String("max") + String(i), 1024);
+	keyMin[i] = getAppProperties().getUserSettings()->getIntValue(String("max") + String(i), 0);
     }
 
     kcd = new KeyCalibrationDialog(32, keyMin, keyMax);
@@ -118,8 +127,8 @@ void MainContentComponent::actionListenerCallback(const String &message)
 	buttonStopGo.setButtonText("Go!");
 	labelSerialDevice.setEnabled(true);
 	comboSerialDevice.setEnabled(true);
-	labelSerialBaud.setEnabled(true);
-	comboSerialBaud.setEnabled(true);
+//	labelSerialBaud.setEnabled(true);
+//	comboSerialBaud.setEnabled(true);
 	serialPortReader.stop();
 	keyboardMonitor.clearKeys();
 	// TODO: Pop up a dialog saying the port died.
@@ -159,13 +168,13 @@ void MainContentComponent::buttonClicked(Button *button)
 	{
 	    oscAddress = lo_address_new(textOSCHost.getText().toRawUTF8(), textOSCPort.getText().toRawUTF8());
 
-	    if (0 == serialPortReader.start(comboSerialDevice.getText(), comboSerialBaud.getSelectedId())) 
+	    if (0 == serialPortReader.start(comboSerialDevice.getText(), 115200)) 
 	    {
 		buttonStopGo.setButtonText("Stop!");
 		labelSerialDevice.setEnabled(false);
 		comboSerialDevice.setEnabled(false);
-		labelSerialBaud.setEnabled(false);
-		comboSerialBaud.setEnabled(false);
+//		labelSerialBaud.setEnabled(false);
+//		comboSerialBaud.setEnabled(false);
 	    }
 	    else
 	    {
@@ -179,8 +188,8 @@ void MainContentComponent::buttonClicked(Button *button)
 	    buttonStopGo.setButtonText("Go!");
 	    labelSerialDevice.setEnabled(true);
 	    comboSerialDevice.setEnabled(true);
-	    labelSerialBaud.setEnabled(true);
-	    comboSerialBaud.setEnabled(true);
+//	    labelSerialBaud.setEnabled(true);
+//	    comboSerialBaud.setEnabled(true);
 	    serialPortReader.stop();
 	}
     }
@@ -206,4 +215,19 @@ float MainContentComponent::getCalibratedValue(uint32_t keyIdx, uint32_t keyValu
     }
 
     return ((float)(keyValue - keyMin[keyIdx]) / (float)(keyMax[keyIdx] - keyMin[keyIdx]));
+}
+
+void MainContentComponent::textEditorTextChanged(TextEditor& t)
+{
+    if (&t == &textOSCHost)
+    {
+	getAppProperties().getUserSettings()->setValue("oschost", textOSCHost.getText());
+    }
+
+    if (&t == &textOSCPort)
+    {
+	getAppProperties().getUserSettings()->setValue("oscport", textOSCPort.getText());
+    }
+
+    getAppProperties().getUserSettings()->saveIfNeeded();
 }

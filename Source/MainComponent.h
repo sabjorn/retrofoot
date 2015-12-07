@@ -23,7 +23,8 @@
 */
 class MainContentComponent   : public Component,
                                public ButtonListener,
-                               public ActionListener
+                               public ActionListener,
+                               public TextEditor::Listener
 {
 public:
     //==============================================================================
@@ -34,6 +35,7 @@ public:
     void paint(Graphics &g);
     void buttonClicked(Button *button);
     void actionListenerCallback(const String& message);
+    void textEditorTextChanged(TextEditor& t);
 
 private:
 
@@ -41,14 +43,14 @@ private:
 
     // Constants
     static const uint32_t xSize = 400;
-    static const uint32_t ySize = 250;
+    static const uint32_t ySize = 220;
 
     // Serial Port Stuff
     GroupComponent      groupSerialSetup;
     Label               labelSerialDevice;
     SerialDeviceChooser comboSerialDevice;
-    Label               labelSerialBaud;
-    ComboBox            comboSerialBaud;
+//    Label               labelSerialBaud;
+//    ComboBox            comboSerialBaud;
     SerialThread        serialPortReader;
     TextButton          buttonStopGo;
 

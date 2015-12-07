@@ -11,6 +11,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "KeyCalibrationDialog.h"
 
+ApplicationProperties& getAppProperties();
+
 //==============================================================================
 KeyCalibrationDialog::KeyCalibrationDialog(uint32_t numKeys, uint32_t *minValues, uint32_t *maxValues)
     : nKeys(numKeys),
@@ -78,9 +80,11 @@ void KeyCalibrationDialog::setKeyValue(int key, int value)
 	{
 	    sliderCalib[key]->setMinValue(value, dontSendNotification);
 	    pMinValues[key] = value;
+	    getAppProperties().getUserSettings()->setValue(String("min") + String(key), String(pMinValues[key]));
 	    if (pMaxValues[key] == value)
 	    {
 		pMaxValues[key] = value + 1;
+		getAppProperties().getUserSettings()->setValue(String("max") + String(key), String(pMaxValues[key]));
 	    }
 	}
 
@@ -88,16 +92,19 @@ void KeyCalibrationDialog::setKeyValue(int key, int value)
 	{
 	    sliderCalib[key]->setMaxValue(value, dontSendNotification);
 	    pMaxValues[key] = value;
+	    getAppProperties().getUserSettings()->setValue(String("max") + String(key), String(pMaxValues[key]));
 	    if (pMinValues[key] == value)
 	    {
-		pMinValues[key] = value - 1;
+		pMinValues[key] = value - 1;	
+		getAppProperties().getUserSettings()->setValue(String("min") + String(key), String(pMinValues[key]));
 	    }
 	}
 
     }
 
     sliderCalib[key]->setValue(value);
-
+    getAppProperties().getUserSettings()->saveIfNeeded();
+    
 }
 
 void KeyCalibrationDialog::paint (Graphics& g)

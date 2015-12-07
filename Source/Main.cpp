@@ -13,22 +13,34 @@
 
 
 //==============================================================================
-class retrofootApplication  : public JUCEApplication
+class RetrofootApplication  : public JUCEApplication
 {
 public:
+
     //==============================================================================
-    retrofootApplication() {}
+    RetrofootApplication() {}
 
     const String getApplicationName() override       { return ProjectInfo::projectName; }
     const String getApplicationVersion() override    { return ProjectInfo::versionString; }
-    bool moreThanOneInstanceAllowed() override       { return true; }
+    bool moreThanOneInstanceAllowed() override       { return false; }
 
     //==============================================================================
     void initialise (const String& commandLine) override
     {
-        // This method is where you should put your application's initialisation code..
+        // initialise our settings file..
+
+        PropertiesFile::Options options;
+        options.applicationName     = "retrofoot";
+        options.filenameSuffix      = "settings";
+        options.osxLibrarySubFolder = "Preferences";
+
+        appProperties = new ApplicationProperties();
+        appProperties->setStorageParameters (options);
+
+	// create main window.
 
         mainWindow = new MainWindow (getApplicationName());
+	
     }
 
     void shutdown() override
@@ -36,6 +48,7 @@ public:
         // Add your application's shutdown code here..
 
         mainWindow = nullptr; // (deletes our window)
+        appProperties = nullptr;
     }
 
     //==============================================================================
@@ -91,10 +104,16 @@ public:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
     };
 
+    ScopedPointer<ApplicationProperties> appProperties;
+
+
 private:
     ScopedPointer<MainWindow> mainWindow;
 };
 
+static RetrofootApplication& getApp()               { return *dynamic_cast<RetrofootApplication*>(JUCEApplication::getInstance()); }
+ApplicationProperties& getAppProperties()           { return *getApp().appProperties; }
+
 //==============================================================================
 // This macro generates the main() routine that launches the app.
-START_JUCE_APPLICATION (retrofootApplication)
+START_JUCE_APPLICATION (RetrofootApplication)
