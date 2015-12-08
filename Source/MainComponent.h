@@ -58,6 +58,7 @@ private:
     static const uint32 ySize = 310;
 	static const uint32 baudRate = 115200;
 	static const uint32 numKeys = 32;
+	
 
     // Serial Port Stuff
     GroupComponent      groupSerialSetup;
@@ -104,7 +105,10 @@ private:
     KeyCalibrationDialog *kcd;
     uint32 keyMax[numKeys];
     uint32 keyMin[numKeys];
-
+	float noteOnThresh;
+	float noteOffThresh;
+	float aftertouchThresh;
+	
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };

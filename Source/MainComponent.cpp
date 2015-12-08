@@ -26,7 +26,10 @@ MainContentComponent::MainContentComponent()
 	  labelMidiOctave(String::empty, "Octave:"),
 	  labelMidiProgram(String::empty, "Prog:"),
 	  labelMidiVelocity(String::empty, "Vel:"),
-      keyboardMonitor(numKeys)
+      keyboardMonitor(numKeys),
+	  noteOnThresh(0.55),
+	  noteOffThresh(0.45),
+	  aftertouchThresh(0.8)
 {
     uint32 y = 10;
 
@@ -342,17 +345,27 @@ void MainContentComponent::actionListenerCallback(const String &message)
 
 		if (isMidiEnabled())
 		{
-			if (false == midiIsNoteOn[keyIdx] && calibratedValue > 0.55)
+			if (false == midiIsNoteOn[keyIdx] && calibratedValue > noteOnThresh)
 			{
 
 				midiIsNoteOn[keyIdx] = true;
 				midiOutput->sendMessageNow(MidiMessage::noteOn(midiChannel(), midiOffset()+keyIdx, midiVelocity(keyIdx, calibratedValue)));
 			}
 			
-			if (true == midiIsNoteOn[keyIdx] && calibratedValue < 0.45)
+			if (true == midiIsNoteOn[keyIdx] && calibratedValue < noteOffThresh)
 			{
 				midiIsNoteOn[keyIdx] = false;
 				midiOutput->sendMessageNow(MidiMessage::noteOff(midiChannel(), midiOffset()+keyIdx, (uint8)127));
+			}
+
+			// Aftertouch
+			if (true == midiIsNoteOn[keyIdx] && calibratedValue > aftertouchThresh)
+			{
+				uint8 aftertouchVal = (uint8)(((calibratedValue-aftertouchThresh)/(1.0-aftertouchThresh))*127.0);
+//				std::cout << "Aftertouch: " << (int)aftertouchVal << std::endl;
+//				midiOutput->sendMessageNow(MidiMessage::aftertouchChange(midiChannel(), midiOffset()+keyIdx, aftertouchVal));
+				midiOutput->sendMessageNow(MidiMessage::channelPressureChange(midiChannel(), aftertouchVal));
+				
 			}
 
 			// Update velocity table.
