@@ -79,6 +79,7 @@ void ParseStream::parse(uint8_t *buf, uint32_t size, StringArray &strArr) //pars
             case OUT_OF_FRAME:
                 if (0xFF == buf[i]){
                     frame_state = PRESYNC;
+					strArr.add(String("SM PRESYNC"));
                 }
                 else{
                     frame_state = OUT_OF_FRAME; // superflouous, already in this state.
@@ -88,13 +89,13 @@ void ParseStream::parse(uint8_t *buf, uint32_t size, StringArray &strArr) //pars
             case PRESYNC:
                 if (0xFF == buf[i]){
                     frame_state = READ_HEADER;
+					strArr.add(String("SM SYNC"));
                 }
                 else{
                     frame_state = OUT_OF_FRAME; // superflouous, already in this state.
-                    strArr.add(String("OUT_OF_FRAME!"));
-		    std::cout << bytecnt << std::endl;
+                    strArr.add(String("SM OOF"));
                 }
-		bytecnt = 0;
+				bytecnt = 0;
                 break;
 
             case READ_HEADER:

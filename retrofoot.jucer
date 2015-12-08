@@ -2,9 +2,13 @@
 
 <JUCERPROJECT id="poCpX3" name="retrofoot" projectType="guiapp" version="1.0.0"
               bundleIdentifier="com.misticlabs.retrofoot" includeBinaryInAppConfig="1"
-              jucerVersion="3.1.0">
+              jucerVersion="3.1.1">
   <MAINGROUP id="FYRgwK" name="retrofoot">
     <GROUP id="{5F1EFCF4-0626-E490-E53A-498FE85CA886}" name="Source">
+      <FILE id="va18RC" name="MidiDeviceChooser.cpp" compile="1" resource="0"
+            file="Source/MidiDeviceChooser.cpp"/>
+      <FILE id="OvNdlN" name="MidiDeviceChooser.h" compile="0" resource="0"
+            file="Source/MidiDeviceChooser.h"/>
       <FILE id="u3NXRJ" name="KeyCalibrationDialog.cpp" compile="1" resource="0"
             file="Source/KeyCalibrationDialog.cpp"/>
       <FILE id="ZCCtOp" name="KeyCalibrationDialog.h" compile="0" resource="0"

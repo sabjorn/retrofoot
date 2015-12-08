@@ -12,6 +12,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SerialThread.h"
 #include "SerialDeviceChooser.h"
+#include "MidiDeviceChooser.h"
 #include "KeyboardMonitorComponent.h"
 #include "KeyCalibrationDialog.h"
 #include "lo/lo.h"
@@ -24,7 +25,8 @@
 class MainContentComponent   : public Component,
                                public ButtonListener,
                                public ActionListener,
-                               public TextEditor::Listener
+                               public TextEditor::Listener,
+                               public ComboBox::Listener
 {
 public:
     //==============================================================================
@@ -36,32 +38,61 @@ public:
     void buttonClicked(Button *button);
     void actionListenerCallback(const String& message);
     void textEditorTextChanged(TextEditor& t);
+	void comboBoxChanged(ComboBox *c);
 
 private:
 
-    float getCalibratedValue(uint32_t keyIdx, uint32_t keyValue);
+    float getCalibratedValue(uint32 keyIdx, uint32 keyValue);
+	bool isMidiEnabled();
+	bool isOscEnabled();
+	bool isSerialEnabled();
+	void updateGui();
+	uint8 midiChannel();
+	uint8 midiOffset();
+	uint8 midiVelocity(uint32 keyIdx, float value);
+	uint8 midiProgram();
 
+	
     // Constants
-    static const uint32_t xSize = 400;
-    static const uint32_t ySize = 220;
+    static const uint32 xSize = 400;
+    static const uint32 ySize = 310;
+	static const uint32 baudRate = 115200;
+	static const uint32 numKeys = 32;
 
     // Serial Port Stuff
     GroupComponent      groupSerialSetup;
+	ToggleButton        enableSerial;
     Label               labelSerialDevice;
     SerialDeviceChooser comboSerialDevice;
-//    Label               labelSerialBaud;
-//    ComboBox            comboSerialBaud;
     SerialThread        serialPortReader;
-    TextButton          buttonStopGo;
+	Label               labelSerialStatus;
+	Label               labelSerialIndicator;
 
-    // Mode Stuff
-    GroupComponent groupMode;
-    ToggleButton   buttonModeSelect[3];
-
+    // OSC Stuff
+    GroupComponent groupOSC;
+	ToggleButton   enableOSC;
     Label          labelOSCHost;
     Label          labelOSCPort;
     TextEditor     textOSCHost;
     TextEditor     textOSCPort;
+	
+    // MIDI Stuff
+    GroupComponent    groupMidi;
+	ToggleButton      enableMidi;
+    MidiDeviceChooser deviceMidi;
+    ComboBox          channelMidi;
+    Label             labelMidiDevice;
+    Label             labelMidiCh;
+    MidiOutput       *midiOutput;
+    bool              midiIsNoteOn[numKeys];
+	float             midiPrevValue[numKeys];
+	Label             labelMidiOctave;
+	ComboBox          octaveMidi;
+	Label             labelMidiProgram;
+	ComboBox          programMidi;
+	Label             labelMidiVelocity;
+	ComboBox          velocityMidi;
+	
 
     // Monitor Stuff
     KeyboardMonitorComponent keyboardMonitor;
@@ -71,8 +102,8 @@ private:
 
     // Calibration Stuff
     KeyCalibrationDialog *kcd;
-    uint32_t keyMax[32];
-    uint32_t keyMin[32];
+    uint32 keyMax[numKeys];
+    uint32 keyMin[numKeys];
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)

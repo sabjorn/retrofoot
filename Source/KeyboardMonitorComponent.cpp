@@ -6,6 +6,7 @@ KeyboardMonitorComponent::KeyboardMonitorComponent(uint32_t numKeys)
     : MidiKeyboardComponent(keyboardState, MidiKeyboardComponent::horizontalKeyboard)
 {
     setColour(mouseOverKeyOverlayColourId, Colour());
+    setColour(blackNoteColourId, Colours::grey);
     setAvailableRange(0, numKeys-1);
     keyGauge = new float[numKeys];
     for (uint32_t i = 0; i < numKeys; i++)
