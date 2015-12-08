@@ -323,6 +323,7 @@ void MainContentComponent::actionListenerCallback(const String &message)
 		{
 			labelSerialIndicator.setColour(Label::textColourId, Colours::green);
 		}
+
 	}
     else if (tokens[0] == "AK") // Key message
     {
@@ -430,9 +431,11 @@ void MainContentComponent::buttonClicked(Button *button)
 		}
 		else
 		{
-			updateGui();
+			// Make sure to update the GUI after stoping the serial port thread
+			// or sometimes the GUI will not reflect the correct state.
 			serialPortReader.stop();
 			keyboardMonitor.clearKeys();
+			updateGui();
 		}
 	}		
 
