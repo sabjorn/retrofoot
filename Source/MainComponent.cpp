@@ -29,7 +29,9 @@ MainContentComponent::MainContentComponent()
       keyboardMonitor(numKeys),
 	  noteOnThresh(0.55),
 	  noteOffThresh(0.45),
-	  aftertouchThresh(0.8)
+	  aftertouchThresh(0.8),
+	  isSynced(false),
+	  midiOutput(NULL)
 {
     uint32 y = 10;
 
@@ -210,6 +212,7 @@ MainContentComponent::~MainContentComponent()
 	{
 		midiOutput->sendMessageNow(MidiMessage::allNotesOff(midiChannel()));
 		delete midiOutput;
+		midiOutput = NULL;
 	}
     delete kcd;
 }
@@ -276,6 +279,7 @@ void MainContentComponent::updateGui()
 	    comboSerialDevice.setEnabled(true);
 		labelSerialDevice.setEnabled(true);
 
+		isSynced = false;
 		labelSerialIndicator.setText("IDLE", dontSendNotification);
 		labelSerialIndicator.setColour(Label::textColourId, Colours::red);
 
@@ -321,10 +325,13 @@ void MainContentComponent::actionListenerCallback(const String &message)
 		else if (tokens[1] == "OOF")
 		{
 			labelSerialIndicator.setColour(Label::textColourId, Colours::red);
+			enableSerial.setToggleState(false, sendNotification);
 		}
 		else if (tokens[1] == "SYNC")
 		{
 			labelSerialIndicator.setColour(Label::textColourId, Colours::green);
+			isSynced = true;
+			updateGui();
 		}
 
 	}
@@ -413,7 +420,7 @@ bool MainContentComponent::isOscEnabled()
 
 bool MainContentComponent::isSerialEnabled()
 {
-	return enableSerial.getToggleState();
+	return enableSerial.getToggleState() && isSynced;
 }
 
 uint8 MainContentComponent::midiChannel()
@@ -430,7 +437,7 @@ void MainContentComponent::buttonClicked(Button *button)
 	// Handle Serial Port Enable
 	if (button == &enableSerial)
 	{
-		if (isSerialEnabled())
+		if (enableSerial.getToggleState())
     	{
 			if (0 == serialPortReader.start(comboSerialDevice.getText(), baudRate)) 
      		{
@@ -479,6 +486,7 @@ void MainContentComponent::buttonClicked(Button *button)
 		{
 			midiOutput->sendMessageNow(MidiMessage::allNotesOff(midiChannel()));
 			delete midiOutput;
+			midiOutput = NULL;
 		}
 
 		updateGui();

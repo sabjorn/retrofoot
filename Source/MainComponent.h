@@ -108,6 +108,7 @@ private:
 	float noteOnThresh;
 	float noteOffThresh;
 	float aftertouchThresh;
+	bool  isSynced;
 	
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
