@@ -8,20 +8,26 @@ MainContentComponent::MainContentComponent()
     : groupSerialSetup(String::empty, "Serial Port Setup"),
       groupOSC(String::empty, "Open Sound Control"),
       groupMidi(String::empty, "MIDI"),
+	  groupMonitor(String::empty, "Monitor"),
       labelSerialDevice(String::empty, "Device:"),
       labelSerialStatus(String::empty, "Status:"),
       labelSerialIndicator(String::empty, ""),
       labelOSCHost(String::empty, "Host:"),
       labelOSCPort(String::empty, "Port:"),
       labelMidiDevice(String::empty, "Device:"),
-      labelMidiCh(String::empty, "Ch:"),
+      labelMidiCh(String::empty, "Channel:"),
       labelMidiOctave(String::empty, "Octave:"),
-      labelMidiProgram(String::empty, "Prog:"),
-      labelMidiVelocity(String::empty, "Vel:"),
+      labelMidiProgram(String::empty, "Program:"),
+      labelMidiVelocity(String::empty, "Velocity:"),
       labelMidiAftertouch(String::empty, "Aftertouch:"),
+	  labelNoteOnThresh(String::empty, "Note On/Off Threshold:"),
+	  labelAftertouchThresh(String::empty, "Aftertouch Threshold:"),
+	  labelAftertouchDepth(String::empty, "AT Depth:"),
+	  labelVelocityParam(String::empty, ""),
       sliderNoteOnThresh(Slider::TwoValueHorizontal, Slider::NoTextBox), 
       sliderAftertouchThresh(Slider::TwoValueHorizontal, Slider::NoTextBox), 
-      sliderAftertouchDepth(Slider::LinearBar, Slider::NoTextBox), 
+      sliderAftertouchDepth(Slider::LinearHorizontal, Slider::NoTextBox),
+      sliderVelocityParam(Slider::LinearHorizontal, Slider::NoTextBox), 
       keyboardMonitor(numKeys),
       isSynced(false),
       midiOutput(NULL)
@@ -37,25 +43,25 @@ MainContentComponent::MainContentComponent()
     y += 20;
 
     // Serial On/Off button
-    enableSerial.setBounds(21, y, 20, 20);
+    enableSerial.setBounds(enablex, y, 20, 20);
     addAndMakeVisible(enableSerial);
     enableSerial.addListener(this);
 
     // "Device:" label
-    labelSerialDevice.setBounds(41, y, 100, 20);
+    labelSerialDevice.setBounds(col1x, y, col1w, 20);
     addAndMakeVisible(labelSerialDevice);
 
     // Serial Device Chooser
-    comboSerialDevice.setBounds(100, y, 150, 20);
+    comboSerialDevice.setBounds(col2x, y, col2w, 20);
     addAndMakeVisible(comboSerialDevice);
     comboSerialDevice.startThread();
 	
     // "Status:" label
-    labelSerialStatus.setBounds(268, y, 100, 20);
+    labelSerialStatus.setBounds(col3x, y, col3w, 20);
     addAndMakeVisible(labelSerialStatus);
 	
     // Status Indicator
-    labelSerialIndicator.setBounds(310, y, 60, 20);
+    labelSerialIndicator.setBounds(col4x, y, col4w, 20);
     addAndMakeVisible(labelSerialIndicator);
 		
     y += 40;
@@ -64,29 +70,30 @@ MainContentComponent::MainContentComponent()
     // OSC Setup
     groupOSC.setBounds(10,y,xSize-20,55);
     addAndMakeVisible(groupOSC);
+
     y += 20;
 
     // OSC enable
-    enableOSC.setBounds(21, y, 20, 20);
+    enableOSC.setBounds(enablex, y, 20, 20);
     addAndMakeVisible(enableOSC);
     enableOSC.addListener(this);
 	
     // "OSC Host:" label
-    labelOSCHost.setBounds(41, y, 100, 20);
+    labelOSCHost.setBounds(col1x, y, col1w, 20);
     addAndMakeVisible(labelOSCHost);
 
     // OSC Host Text entry
-    textOSCHost.setBounds(100, y, 150, 20);
+    textOSCHost.setBounds(col2x, y, col2w, 20);
     textOSCHost.setText(getAppProperties().getUserSettings()->getValue("oschost", "localhost"));
     textOSCHost.addListener(this);
     addAndMakeVisible(textOSCHost);
 
     // "OSC Port:" label
-    labelOSCPort.setBounds(268, y, 100, 20);
+    labelOSCPort.setBounds(col3x, y, col3w, 20);
     addAndMakeVisible(labelOSCPort);
 
     // OSC Port Text entry
-    textOSCPort.setBounds(310, y, 60, 20);
+    textOSCPort.setBounds(col4x, y, col4w, 20);
     textOSCPort.setText(getAppProperties().getUserSettings()->getValue("oscport", "2112"));
     textOSCPort.addListener(this);
     addAndMakeVisible(textOSCPort);
@@ -94,30 +101,30 @@ MainContentComponent::MainContentComponent()
 
     //==========================================================================
     // MIDI Setup
-    groupMidi.setBounds(10,y,xSize-20,165);
+    groupMidi.setBounds(10,y,xSize-20,205);
     addAndMakeVisible(groupMidi);
     y += 20;
 
     // MIDI enable
-    enableMidi.setBounds(21, y, 20, 20);
+    enableMidi.setBounds(enablex, y, 20, 20);
     addAndMakeVisible(enableMidi);
     enableMidi.addListener(this);
     
     // "MIDI Device:" label
-    labelMidiDevice.setBounds(41, y, 100, 20);
+    labelMidiDevice.setBounds(col1x, y, col1w, 20);
     addAndMakeVisible(labelMidiDevice);
     
     // Midi Device Chooser
-    deviceMidi.setBounds(100, y, 150, 20);
+    deviceMidi.setBounds(col2x, y, col2w, 20);
     deviceMidi.startThread();
     addAndMakeVisible(deviceMidi);
     
     // "Midi Channel:" label
-    labelMidiCh.setBounds(268, y, 100, 20);
+    labelMidiCh.setBounds(col3x, y, col3w, 20);
     addAndMakeVisible(labelMidiCh);
     
     // Midi channel chooser
-    channelMidi.setBounds(310, y, 60, 20);
+    channelMidi.setBounds(col4x, y, col4w, 20);
     for (uint32 i = 0; i < 16; i++)
     {
 	channelMidi.addItem(String(i+1), i+1);
@@ -125,14 +132,14 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(channelMidi);
     channelMidi.setSelectedId(getAppProperties().getUserSettings()->getIntValue("midich", 1));
     channelMidi.addListener(this);
-    y += 25;
+    y += 30;
     
     // "Midi Program:" label
-    labelMidiProgram.setBounds(41, y, 100, 20);
+    labelMidiProgram.setBounds(col1x, y, col1w, 20);
     addAndMakeVisible(labelMidiProgram);
     
     // Midi Program Chooser
-    programMidi.setBounds(100, y, 50, 20);
+    programMidi.setBounds(col2x, y, col2w, 20);
     for (uint32 i = 0; i < 128; i++) // Midi Programs!
     {
 	programMidi.addItem(String(i+1), i+1);
@@ -142,11 +149,11 @@ MainContentComponent::MainContentComponent()
     programMidi.addListener(this);
     
     // "Midi Octave:" label
-    labelMidiOctave.setBounds(160, y, 50, 20);
+    labelMidiOctave.setBounds(col3x, y, col3w, 20);
     addAndMakeVisible(labelMidiOctave);
     
     // Midi Octave Chooser
-    octaveMidi.setBounds(210, y, 40, 20);
+    octaveMidi.setBounds(col4x, y, col4w, 20);
     for (uint32 i = 0; i < 9; i++) // Octaves 0 to 8. Octave 8 goes up to note 127 with the high G on the keyboard.
     {
 	octaveMidi.addItem(String(i), i+1);
@@ -154,67 +161,92 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(octaveMidi);
     octaveMidi.setSelectedId(getAppProperties().getUserSettings()->getIntValue("midioct", 3));
     octaveMidi.addListener(this);
-    
-    // "Midi Velocity:" label
-    labelMidiVelocity.setBounds(268, y, 100, 20);
-    addAndMakeVisible(labelMidiVelocity);
-    
-    // Midi Velocity Chooser
-    velocityMidi.setBounds(310, y, 60, 20);
-    velocityMidi.addItem("Auto", 128);
-    velocityMidi.addItem("64", 64);
-    velocityMidi.addItem("100", 100);
-    velocityMidi.addItem("127", 127);
-    
-    addAndMakeVisible(velocityMidi);
-    velocityMidi.setSelectedId(getAppProperties().getUserSettings()->getIntValue("midivel", 128));
-    velocityMidi.addListener(this);
-    y += 30;
-    
-    // "Midi Aftertouch:" label
-    labelMidiAftertouch.setBounds(41, y, 100, 20);
-    addAndMakeVisible(labelMidiAftertouch);
-    
-    // Midi Aftertouch Chooser
-    aftertouchMidi.setBounds(100, y, 100, 20);
-    aftertouchMidi.addItem("Off", ID_AFTERTOUCH_OFF);
-    aftertouchMidi.addItem("Mono", ID_AFTERTOUCH_MONO);
-    aftertouchMidi.addItem("Poly", ID_AFTERTOUCH_POLY);
-    aftertouchMidi.setSelectedId(getAppProperties().getUserSettings()->getIntValue("midiaft", ID_AFTERTOUCH_OFF));
-    aftertouchMidi.addListener(this);
-    addAndMakeVisible(aftertouchMidi);
+	y += 30;
 
-    // Aftertouch Depth
-    sliderAftertouchDepth.setBounds(268, y, 100, 20);
-    sliderAftertouchDepth.setRange(0.0, 1.0);
-    sliderAftertouchDepth.setValue(getAppProperties().getUserSettings()->getDoubleValue("aft_depth", 0.5));
-    sliderAftertouchDepth.addListener(this);
-    addAndMakeVisible(sliderAftertouchDepth);
-    
-    y += 30;
-
+    // Off/On threshold label
+    labelNoteOnThresh.setBounds(col1x, y, col1w+col2w/2, 20);
+    addAndMakeVisible(labelNoteOnThresh);
+	
     // Note Off / Note On Threshold Slider
-    sliderNoteOnThresh.setBounds(41, y, 300, 20);
-    sliderNoteOnThresh.setRange(0.0, 1.0);
+    sliderNoteOnThresh.setBounds(col2x+col2w/2, y, xSize-20-col2x-col2w/2, 20);
+    sliderNoteOnThresh.setRange(0.05, .95);
     sliderNoteOnThresh.addListener(this);
     sliderNoteOnThresh.setMaxValue(getAppProperties().getUserSettings()->getDoubleValue("thr_on", 0.55));
     sliderNoteOnThresh.setMinValue(getAppProperties().getUserSettings()->getDoubleValue("thr_off", 0.45));
     addAndMakeVisible(sliderNoteOnThresh);
 
     y += 30;
-    sliderAftertouchThresh.setBounds(41, y, 300, 20);
-    sliderAftertouchThresh.setRange(0.0, 1.0);
+
+    // "Midi Velocity:" label
+    labelMidiVelocity.setBounds(col1x, y, col1w, 20);
+    addAndMakeVisible(labelMidiVelocity);
+    
+    // Midi Velocity Chooser
+    velocityMidi.setBounds(col2x, y, col2w, 20);
+    velocityMidi.addItem("Auto", ID_VELOCITY_AUTO);
+    velocityMidi.addItem("Fixed", ID_VELOCITY_FIXED);
+    
+    addAndMakeVisible(velocityMidi);
+    velocityMidi.setSelectedId(getAppProperties().getUserSettings()->getIntValue("midivel", 128));
+    velocityMidi.addListener(this);
+
+	// "Velocity Parameter"
+	labelVelocityParam.setBounds(col3x, y, col3w, 20);
+	addAndMakeVisible(labelVelocityParam);
+
+	sliderVelocityParam.setBounds(col4x, y, col4w, 20);
+	sliderVelocityParam.addListener(this);
+    addAndMakeVisible(sliderVelocityParam);
+	
+    y += 30;
+	
+    // "Midi Aftertouch:" label
+    labelMidiAftertouch.setBounds(col1x, y, col1w, 20);
+    addAndMakeVisible(labelMidiAftertouch);
+    
+    // Midi Aftertouch Chooser
+    aftertouchMidi.setBounds(col2x, y, col2w, 20);
+    aftertouchMidi.addItem("Mono", ID_AFTERTOUCH_MONO);
+    aftertouchMidi.addItem("Poly", ID_AFTERTOUCH_POLY);
+    aftertouchMidi.setSelectedId(getAppProperties().getUserSettings()->getIntValue("midiaft", ID_AFTERTOUCH_MONO));
+    aftertouchMidi.addListener(this);
+    addAndMakeVisible(aftertouchMidi);
+	
+    // "Midi Aftertouch Depth:" label
+    labelAftertouchDepth.setBounds(col3x, y, col3w, 20);
+    addAndMakeVisible(labelAftertouchDepth);
+
+    // Aftertouch Depth
+    sliderAftertouchDepth.setBounds(col4x, y, col4w, 20);
+    sliderAftertouchDepth.setRange(0.05, .95);
+    sliderAftertouchDepth.setValue(getAppProperties().getUserSettings()->getDoubleValue("aft_depth", 0.5));
+    sliderAftertouchDepth.addListener(this);
+    addAndMakeVisible(sliderAftertouchDepth);
+    
+    y += 30;
+
+    // "Midi Aftertouch Thresh:" label
+    labelAftertouchThresh.setBounds(col1x, y, col1w+col2w/2, 20);
+    addAndMakeVisible(labelAftertouchThresh);
+
+    sliderAftertouchThresh.setBounds(col2x+col2w/2, y, xSize-20-col2x-col2w/2, 20);
+    sliderAftertouchThresh.setRange(0.05, 0.95);
     sliderAftertouchThresh.addListener(this);
     sliderAftertouchThresh.setMaxValue(getAppProperties().getUserSettings()->getDoubleValue("thr_aft", 0.80));
     sliderAftertouchThresh.setMinValue(getAppProperties().getUserSettings()->getDoubleValue("thr_off", 0.45));
     addAndMakeVisible(sliderAftertouchThresh);
 
 
-    y += 47;
+    y += 40;
     
     //==========================================================================
     // Keyboard Monitor and calibration.
-    keyboardMonitor.setBounds(10, y, xSize-20, 70);
+	groupMonitor.setBounds(10, y, xSize-20, 100);
+	addAndMakeVisible(groupMonitor);
+	y += 20;
+
+	
+	keyboardMonitor.setBounds(40, y, xSize-79, 70);
     keyboardMonitor.setKeyWidth(20);
     keyboardMonitor.addActionListener(this);
     addAndMakeVisible(keyboardMonitor);
@@ -253,7 +285,7 @@ MainContentComponent::~MainContentComponent()
 // Main GUI enable/disable logic
 void MainContentComponent::updateGui()
 {
-    if (isSerialEnabled())
+		if (isSerialEnabled())
     {
 	// Cannot change serial device while serial is enabled
 	comboSerialDevice.setEnabled(false);
@@ -281,17 +313,11 @@ void MainContentComponent::updateGui()
 
 	if (isMidiEnabled())
 	{
-	    // Have to disable MIDI to change device
+	    // Have to disable MIDI to change device or channel.
 	    labelMidiDevice.setEnabled(false);
 	    deviceMidi.setEnabled(false);
 	    labelMidiCh.setEnabled(false);
 	    channelMidi.setEnabled(false);
-	    labelMidiOctave.setEnabled(false);
-	    octaveMidi.setEnabled(false);
-	    labelMidiProgram.setEnabled(false);
-	    programMidi.setEnabled(false);
-	    labelMidiVelocity.setEnabled(false);
-	    velocityMidi.setEnabled(false);
 	}
 	else
 	{
@@ -299,14 +325,9 @@ void MainContentComponent::updateGui()
 	    deviceMidi.setEnabled(true);
 	    labelMidiCh.setEnabled(true);
 	    channelMidi.setEnabled(true);
-	    labelMidiOctave.setEnabled(true);
-	    octaveMidi.setEnabled(true);
-	    labelMidiProgram.setEnabled(true);
-	    programMidi.setEnabled(true);
-	    labelMidiVelocity.setEnabled(true);
-	    velocityMidi.setEnabled(true);
-	}
+
     }
+	}
     else // Serial is not enabled
     {
 	comboSerialDevice.setEnabled(true);
@@ -329,14 +350,21 @@ void MainContentComponent::updateGui()
 	deviceMidi.setEnabled(true);
 	labelMidiCh.setEnabled(true);
 	channelMidi.setEnabled(true);
-	labelMidiOctave.setEnabled(true);
-	octaveMidi.setEnabled(true);
-	labelMidiProgram.setEnabled(true);
-	programMidi.setEnabled(true);
-	labelMidiVelocity.setEnabled(true);
-	velocityMidi.setEnabled(true);
-    }
-}
+	}
+
+		if (velocityMidi.getSelectedId() == ID_VELOCITY_AUTO)
+		{
+				labelVelocityParam.setText("Alpha:", dontSendNotification);
+				sliderVelocityParam.setRange(2,10);
+				sliderVelocityParam.setValue(getAppProperties().getUserSettings()->getDoubleValue("vel_auto", 7.0));
+		}
+		else if (velocityMidi.getSelectedId() == ID_VELOCITY_FIXED)
+		{
+				labelVelocityParam.setText("Setpoint:", dontSendNotification);
+				sliderVelocityParam.setRange(1,127);
+				sliderVelocityParam.setValue(getAppProperties().getUserSettings()->getDoubleValue("vel_fixed", 100));
+		}
+}		
 
 void MainContentComponent::actionListenerCallback(const String &message)
 {
@@ -385,17 +413,32 @@ void MainContentComponent::actionListenerCallback(const String &message)
 
 	if (isMidiEnabled())
 	{
+		 
+		if ((true == midiIsNoteOn[keyIdx]) && (calibratedValue < aftertouchThresh()))
+	    {
+				if (aftertouchMidi.getSelectedId() == ID_AFTERTOUCH_MONO)
+				{
+						midiOutput->sendMessageNow(MidiMessage::channelPressureChange(midiChannel(), 0));
+				}
+		
+				if (aftertouchMidi.getSelectedId() == ID_AFTERTOUCH_POLY)
+				{
+						midiOutput->sendMessageNow(MidiMessage::aftertouchChange(midiChannel(), midiOffset()+keyIdx, 0));
+				}		
+	    }
+
 	    if (false == midiIsNoteOn[keyIdx] && calibratedValue > noteOnThresh())
 	    {
 
 		midiIsNoteOn[keyIdx] = true;
-		midiOutput->sendMessageNow(MidiMessage::noteOn(midiChannel(), midiOffset()+keyIdx, midiVelocity(keyIdx, calibratedValue)));
+		midiOutput->sendMessageNow(MidiMessage::noteOn(midiChannel(), midiOffset()+keyIdx, midiVelocity(keyIdx, calibratedValue, true)));
 	    }
 			
 	    if (true == midiIsNoteOn[keyIdx] && calibratedValue < noteOffThresh())
 	    {
 		midiIsNoteOn[keyIdx] = false;
-		midiOutput->sendMessageNow(MidiMessage::noteOff(midiChannel(), midiOffset()+keyIdx, (uint8)127));
+		
+		midiOutput->sendMessageNow(MidiMessage::noteOff(midiChannel(), midiOffset()+keyIdx, midiVelocity(keyIdx, calibratedValue, false)));
 	    }
 
 	    // Aftertouch
@@ -414,6 +457,7 @@ void MainContentComponent::actionListenerCallback(const String &message)
 		}		
 	    }
 
+		
 	    // Update velocity table.
 	    midiPrevValue[keyIdx] = calibratedValue;
 	}
@@ -433,17 +477,28 @@ uint8 MainContentComponent::midiProgram()
     return (uint8)(programMidi.getSelectedId()-1);
 }
 
-uint8 MainContentComponent::midiVelocity(uint32 keyIdx, float value)
+uint8 MainContentComponent::midiVelocity(uint32 keyIdx, float value, bool attack)
 {
-    if (velocityMidi.getSelectedId() == 128)
+    if (velocityMidi.getSelectedId() == ID_VELOCITY_AUTO)
     {
-	float diff = value - midiPrevValue[keyIdx];
-	float scaled_diff = 1.0 - exp(-7.0*diff);
+			float diff;
+			float scalefactor = 1.0 - exp(-1.0*sliderVelocityParam.getValue());
+
+			if (attack)
+			{
+					diff = value - midiPrevValue[keyIdx];
+			}
+			else
+			{
+					// Release velocity. I dont know what synths support this but here it is anyway.
+					diff = midiPrevValue[keyIdx] - value;
+			}
+			float scaled_diff = (1.0 - exp(-1.0*sliderVelocityParam.getValue()*diff))/scalefactor;
 	return (uint8)(127*scaled_diff + 0.5);
     }
-    else
+    else if (velocityMidi.getSelectedId() == ID_VELOCITY_FIXED)
     {
-	return (uint8)(velocityMidi.getSelectedId());
+	return (uint8)(sliderVelocityParam.getValue());
     }
 }
 
@@ -573,27 +628,37 @@ void MainContentComponent::comboBoxChanged(ComboBox *c)
 {
     if (c == &channelMidi)
     {
-	getAppProperties().getUserSettings()->setValue("midich", channelMidi.getSelectedId());
+	  getAppProperties().getUserSettings()->setValue("midich", channelMidi.getSelectedId());
     }
 
     if (c == &octaveMidi)
     {
-	getAppProperties().getUserSettings()->setValue("midioct", octaveMidi.getSelectedId());
+	  getAppProperties().getUserSettings()->setValue("midioct", octaveMidi.getSelectedId());
+	  if (isMidiEnabled())
+	  {
+	    midiOutput->sendMessageNow(MidiMessage::allNotesOff(midiChannel()));
+	  }
     }
     
     if (c == &programMidi)
     {
-	getAppProperties().getUserSettings()->setValue("midiprog", programMidi.getSelectedId());
+	  getAppProperties().getUserSettings()->setValue("midiprog", programMidi.getSelectedId());
+	  if (isMidiEnabled())
+	  {
+	    midiOutput->sendMessageNow(MidiMessage::allNotesOff(midiChannel()));
+			  midiOutput->sendMessageNow(MidiMessage::programChange(midiChannel(), midiProgram()));
+	  }
     }
     
     if (c == &velocityMidi)
     {
-	getAppProperties().getUserSettings()->setValue("midivel", velocityMidi.getSelectedId());
+	  getAppProperties().getUserSettings()->setValue("midivel", velocityMidi.getSelectedId());
+	  updateGui();
     }
 
     if (c == &aftertouchMidi)
     {
-	getAppProperties().getUserSettings()->setValue("midiaft", aftertouchMidi.getSelectedId());
+	  getAppProperties().getUserSettings()->setValue("midiaft", aftertouchMidi.getSelectedId());
     }
 	
     getAppProperties().getUserSettings()->saveIfNeeded();
@@ -614,7 +679,12 @@ void MainContentComponent::sliderValueChanged(Slider *s)
 	    sliderAftertouchThresh.setMaxValue(sliderNoteOnThresh.getMinValue());
 	}
 	sliderAftertouchThresh.setMinValue(sliderNoteOnThresh.getMinValue());
-    }
+
+	keyboardMonitor.setNoteOn(sliderNoteOnThresh.getMaxValue());
+	keyboardMonitor.setNoteOff(sliderNoteOnThresh.getMinValue());
+	keyboardMonitor.repaint();
+	
+	}
     
     if (s == &sliderAftertouchThresh)
     {
@@ -623,10 +693,28 @@ void MainContentComponent::sliderValueChanged(Slider *s)
 	    sliderNoteOnThresh.setMaxValue(sliderAftertouchThresh.getMinValue());
 	}
 	sliderNoteOnThresh.setMinValue(sliderAftertouchThresh.getMinValue());
+
+	keyboardMonitor.setAftertouch(sliderAftertouchThresh.getMaxValue());
+	keyboardMonitor.setNoteOff(sliderAftertouchThresh.getMinValue());
+	keyboardMonitor.repaint();
     }
 
+	if (s == &sliderVelocityParam)
+	{
+			if (velocityMidi.getSelectedId() == ID_VELOCITY_AUTO)
+			{
+				 getAppProperties().getUserSettings()->setValue("vel_auto", sliderVelocityParam.getValue());	
+			}
+			else if (velocityMidi.getSelectedId() == ID_VELOCITY_FIXED)
+			{
+				 getAppProperties().getUserSettings()->setValue("vel_fixed", sliderVelocityParam.getValue());	
+			}
+	}
+	
     getAppProperties().getUserSettings()->setValue("thr_on", sliderNoteOnThresh.getMaxValue());
     getAppProperties().getUserSettings()->setValue("thr_off", sliderNoteOnThresh.getMinValue());
     getAppProperties().getUserSettings()->setValue("thr_aft", sliderAftertouchThresh.getMaxValue());
+    getAppProperties().getUserSettings()->setValue("aft_depth", sliderAftertouchDepth.getValue());
     getAppProperties().getUserSettings()->saveIfNeeded();
+
 }

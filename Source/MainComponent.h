@@ -50,7 +50,7 @@ private:
     void updateGui();
     uint8 midiChannel();
     uint8 midiOffset();
-    uint8 midiVelocity(uint32 keyIdx, float value);
+    uint8 midiVelocity(uint32 keyIdx, float value, bool attack);
     uint8 midiProgram();
     void sliderValueChanged(Slider *s);
 
@@ -60,15 +60,27 @@ private:
     float aftertouchDepth() { return sliderAftertouchDepth.getValue(); }; 
     
     // Constants
-    static const uint32 xSize = 400;
-    static const uint32 ySize = 400;
+    static const uint32 xSize = 460;
+    static const uint32 ySize = 450;
     static const uint32 baudRate = 115200;
     static const uint32 numKeys = 32;
+
+	// GUI Placement Constants
+	static const uint32 enablex = 20;
+	static const uint32 col1x   = 40;
+	static const uint32 col2x   = 110;
+	static const uint32 col3x   = 260;
+	static const uint32 col4x   = 320;
+	static const uint32 col1w   = col2x-col1x;
+	static const uint32 col2w   = col3x-col2x-20;
+	static const uint32 col3w   = col4x-col3x;
+	static const uint32 col4w   = xSize-20-col4x;
 	
     // IDs for stuff
-    static const uint32 ID_AFTERTOUCH_OFF  = 1;
-    static const uint32 ID_AFTERTOUCH_MONO = 2;
-    static const uint32 ID_AFTERTOUCH_POLY = 3;
+    static const uint32 ID_AFTERTOUCH_MONO = 1;
+    static const uint32 ID_AFTERTOUCH_POLY = 2;
+	static const uint32 ID_VELOCITY_AUTO = 1;
+	static const uint32 ID_VELOCITY_FIXED = 2;
 
     // Serial Port Stuff
     GroupComponent      groupSerialSetup;
@@ -103,13 +115,20 @@ private:
     ComboBox          programMidi;
     Label             labelMidiVelocity;
     ComboBox          velocityMidi;
+	Label             labelVelocityParam;
+	Slider            sliderVelocityParam;
     ComboBox          aftertouchMidi;
     Label             labelMidiAftertouch;
+	Label             labelNoteOnThresh;
     Slider            sliderNoteOnThresh;
     Slider            sliderAftertouchThresh;
-    Slider            sliderAftertouchDepth;
 
+	Label             labelAftertouchDepth;
+	Slider            sliderAftertouchDepth;
+	Label             labelAftertouchThresh;
+	
     // Monitor Stuff
+	GroupComponent groupMonitor;
     KeyboardMonitorComponent keyboardMonitor;
 
     // OSC sender

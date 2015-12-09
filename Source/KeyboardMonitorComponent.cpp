@@ -21,6 +21,15 @@ void KeyboardMonitorComponent::drawWhiteNote(int midiNoteNumber, Graphics &g, in
     g.setColour(Colour(0,0,128));
     g.setOpacity(0.5);
     g.fillRect(x+1,y,w-1,int(keyGauge[midiNoteNumber]*(h-1)));
+
+	g.setColour(Colours::red);
+	g.drawLine(x+w/2-2,y+h*noteOffThresh,x+w/2+2,y+h*noteOffThresh);
+
+	g.setColour(Colours::green);
+	g.drawLine(x+w/2-2,y+h*noteOnThresh,x+w/2+2,y+h*noteOnThresh);
+
+	g.setColour(Colours::purple);
+	g.drawLine(x+w/2-2,y+h*aftertouchThresh,x+w/2+2,y+h*aftertouchThresh);
 }
 
 void KeyboardMonitorComponent::drawBlackNote(int midiNoteNumber, Graphics &g, int x, int y, int w, int h, bool isDown, bool isOver, const Colour &noteFillColour)
@@ -29,6 +38,15 @@ void KeyboardMonitorComponent::drawBlackNote(int midiNoteNumber, Graphics &g, in
     g.setColour(Colour(0,0,128));
     g.setOpacity(0.5);
     g.fillRect(x+1,y,w-2,int(keyGauge[midiNoteNumber]*(h-2)));
+
+	g.setColour(Colours::red);
+	g.drawLine(x+w/2-2,y+h*noteOffThresh,x+w/2+2,y+h*noteOffThresh);
+
+	g.setColour(Colours::green);
+	g.drawLine(x+w/2-2,y+h*noteOnThresh,x+w/2+2,y+h*noteOnThresh);
+
+	g.setColour(Colours::purple);
+	g.drawLine(x+w/2-2,y+h*aftertouchThresh,x+w/2+2,y+h*aftertouchThresh);
 }
 
 void KeyboardMonitorComponent::setKeyPosition(int midiNoteNumber, float keyPosition)
@@ -36,6 +54,22 @@ void KeyboardMonitorComponent::setKeyPosition(int midiNoteNumber, float keyPosit
     keyGauge[midiNoteNumber] = keyPosition;
     repaint();
 }
+
+void KeyboardMonitorComponent::setNoteOn(float thresh)
+{
+		noteOnThresh = thresh;
+}
+
+void KeyboardMonitorComponent::setNoteOff(float thresh)
+{
+		noteOffThresh = thresh;
+}
+
+void KeyboardMonitorComponent::setAftertouch(float thresh)
+{
+		aftertouchThresh = thresh;
+}
+
 
 void KeyboardMonitorComponent::clearKeys()
 {
