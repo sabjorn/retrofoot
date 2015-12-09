@@ -169,10 +169,11 @@ MainContentComponent::MainContentComponent()
 	
     // Note Off / Note On Threshold Slider
     sliderNoteOnThresh.setBounds(col2x+col2w/2, y, xSize-20-col2x-col2w/2, 20);
-    sliderNoteOnThresh.setRange(0.05, .95);
+    sliderNoteOnThresh.setRange(0.05, 0.95, 0.01);
     sliderNoteOnThresh.addListener(this);
     sliderNoteOnThresh.setMaxValue(getAppProperties().getUserSettings()->getDoubleValue("thr_on", 0.55));
     sliderNoteOnThresh.setMinValue(getAppProperties().getUserSettings()->getDoubleValue("thr_off", 0.45));
+	sliderNoteOnThresh.setPopupDisplayEnabled(true, this);
     addAndMakeVisible(sliderNoteOnThresh);
 
     y += 30;
@@ -196,6 +197,7 @@ MainContentComponent::MainContentComponent()
 
 	sliderVelocityParam.setBounds(col4x, y, col4w, 20);
 	sliderVelocityParam.addListener(this);
+	sliderVelocityParam.setPopupDisplayEnabled(true, this);
     addAndMakeVisible(sliderVelocityParam);
 	
     y += 30;
@@ -218,9 +220,10 @@ MainContentComponent::MainContentComponent()
 
     // Aftertouch Depth
     sliderAftertouchDepth.setBounds(col4x, y, col4w, 20);
-    sliderAftertouchDepth.setRange(0.05, .95);
+    sliderAftertouchDepth.setRange(0.05, 0.95, 0.01);
     sliderAftertouchDepth.setValue(getAppProperties().getUserSettings()->getDoubleValue("aft_depth", 0.5));
     sliderAftertouchDepth.addListener(this);
+	sliderAftertouchDepth.setPopupDisplayEnabled(true, this);
     addAndMakeVisible(sliderAftertouchDepth);
     
     y += 30;
@@ -230,10 +233,11 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(labelAftertouchThresh);
 
     sliderAftertouchThresh.setBounds(col2x+col2w/2, y, xSize-20-col2x-col2w/2, 20);
-    sliderAftertouchThresh.setRange(0.05, 0.95);
+    sliderAftertouchThresh.setRange(0.05, 0.95, 0.01);
     sliderAftertouchThresh.addListener(this);
     sliderAftertouchThresh.setMaxValue(getAppProperties().getUserSettings()->getDoubleValue("thr_aft", 0.80));
     sliderAftertouchThresh.setMinValue(getAppProperties().getUserSettings()->getDoubleValue("thr_off", 0.45));
+	sliderAftertouchThresh.setPopupDisplayEnabled(true, this);
     addAndMakeVisible(sliderAftertouchThresh);
 
 
@@ -355,13 +359,13 @@ void MainContentComponent::updateGui()
 		if (velocityMidi.getSelectedId() == ID_VELOCITY_AUTO)
 		{
 				labelVelocityParam.setText("Alpha:", dontSendNotification);
-				sliderVelocityParam.setRange(2,10);
+				sliderVelocityParam.setRange(2,10,0.1);
 				sliderVelocityParam.setValue(getAppProperties().getUserSettings()->getDoubleValue("vel_auto", 7.0));
 		}
 		else if (velocityMidi.getSelectedId() == ID_VELOCITY_FIXED)
 		{
 				labelVelocityParam.setText("Setpoint:", dontSendNotification);
-				sliderVelocityParam.setRange(1,127);
+				sliderVelocityParam.setRange(0,127,1);
 				sliderVelocityParam.setValue(getAppProperties().getUserSettings()->getDoubleValue("vel_fixed", 100));
 		}
 }		
