@@ -43,7 +43,7 @@ MainContentComponent::MainContentComponent()
     y += 20;
 
     // Serial On/Off button
-    enableSerial.setBounds(enablex, y, 20, 20);
+    enableSerial.setBounds(enablex, y, 23, 20);
     addAndMakeVisible(enableSerial);
     enableSerial.addListener(this);
 
@@ -74,7 +74,7 @@ MainContentComponent::MainContentComponent()
     y += 20;
 
     // OSC enable
-    enableOSC.setBounds(enablex, y, 20, 20);
+    enableOSC.setBounds(enablex, y, 23, 20);
     addAndMakeVisible(enableOSC);
     enableOSC.addListener(this);
 	
@@ -106,7 +106,7 @@ MainContentComponent::MainContentComponent()
     y += 20;
 
     // MIDI enable
-    enableMidi.setBounds(enablex, y, 20, 20);
+    enableMidi.setBounds(enablex, y, 23, 20);
     addAndMakeVisible(enableMidi);
     enableMidi.addListener(this);
     
