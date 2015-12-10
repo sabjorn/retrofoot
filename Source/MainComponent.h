@@ -27,7 +27,8 @@ class MainContentComponent   : public Component,
                                public ActionListener,
                                public TextEditor::Listener,
                                public ComboBox::Listener,
-                               public Slider::Listener
+                         	   public Slider::Listener,
+                         	   public Timer
 {
 public:
     //==============================================================================
@@ -53,6 +54,7 @@ private:
     uint8 midiVelocity(uint32 keyIdx, float value, bool attack);
     uint8 midiProgram();
     void sliderValueChanged(Slider *s);
+	void timerCallback() { keyboardMonitor.repaint(); };
 
     float noteOnThresh() { return sliderNoteOnThresh.getMaxValue(); };
     float noteOffThresh() { return sliderNoteOnThresh.getMinValue(); };

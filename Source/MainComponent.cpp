@@ -268,6 +268,7 @@ MainContentComponent::MainContentComponent()
 
     //==========================================================================
     // Set the GUI in its initial state
+	startTimer(50);
     updateGui();
 
 }
@@ -277,6 +278,7 @@ MainContentComponent::~MainContentComponent()
     comboSerialDevice.stopThread(1000);
     deviceMidi.stopThread(1000);
     serialPortReader.stop();
+	stopTimer();
     if (NULL != midiOutput)
     {
 	midiOutput->sendMessageNow(MidiMessage::allNotesOff(midiChannel()));

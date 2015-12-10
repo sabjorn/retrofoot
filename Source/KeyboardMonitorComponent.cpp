@@ -3,7 +3,7 @@
 
 
 KeyboardMonitorComponent::KeyboardMonitorComponent(uint32_t numKeys) 
-    : MidiKeyboardComponent(keyboardState, MidiKeyboardComponent::horizontalKeyboard)
+		: MidiKeyboardComponent(keyboardState, MidiKeyboardComponent::horizontalKeyboard)
 {
     setColour(mouseOverKeyOverlayColourId, Colour());
     setColour(blackNoteColourId, Colours::grey);
@@ -12,6 +12,7 @@ KeyboardMonitorComponent::KeyboardMonitorComponent(uint32_t numKeys)
     for (uint32_t i = 0; i < numKeys; i++)
     {
 	keyGauge[i] = 0.0;
+	
     }
 }
 
@@ -52,7 +53,7 @@ void KeyboardMonitorComponent::drawBlackNote(int midiNoteNumber, Graphics &g, in
 void KeyboardMonitorComponent::setKeyPosition(int midiNoteNumber, float keyPosition)
 {
     keyGauge[midiNoteNumber] = keyPosition;
-    repaint();
+	// repaint();
 }
 
 void KeyboardMonitorComponent::setNoteOn(float thresh)
@@ -88,7 +89,7 @@ bool KeyboardMonitorComponent::mouseDownOnKey(int midiNoteNumber, const MouseEve
 
 KeyboardMonitorComponent::~KeyboardMonitorComponent()
 {
-    delete [] keyGauge;
+		delete [] keyGauge;
 }
 
 

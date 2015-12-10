@@ -24,7 +24,7 @@ public:
 	void setNoteOn(float thresh);
 	void setNoteOff(float thresh);
 	void setAftertouch(float thresh);
-	
+
 private:
 
     MidiKeyboardState keyboardState;
