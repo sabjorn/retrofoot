@@ -374,108 +374,116 @@ void MainContentComponent::updateGui()
 
 void MainContentComponent::actionListenerCallback(const String &message)
 {
-    StringArray tokens = StringArray::fromTokens(message, true);
+	StringArray tokens = StringArray::fromTokens(message, true);
 
-    if (tokens[0] == "SerialPortDied") // Serial Port Error
-    {
-	// Disable serial. Will update GUI.
-	enableSerial.setToggleState(false, sendNotification);
-    }
-    else if (tokens[0] == "SM") // State Machine Messages
-    {
-	labelSerialIndicator.setText(tokens[1], dontSendNotification);
-
-	if (tokens[1] == "PRESYNC")
+	while (tokens.size())
 	{
-	    labelSerialIndicator.setColour(Label::textColourId, Colours::yellow);
-	}
-	else if (tokens[1] == "OOF")
-	{
-	    labelSerialIndicator.setColour(Label::textColourId, Colours::red);
-	    enableSerial.setToggleState(false, sendNotification);
-	}
-	else if (tokens[1] == "SYNC")
-	{
-	    labelSerialIndicator.setColour(Label::textColourId, Colours::green);
-	    isSynced = true;
-	    updateGui();
-	}
-
-    }
-    else if (tokens[0] == "AK") // Key message
-    {
-	uint32 keyIdx = tokens[2].getIntValue();
-	uint32 adcVal = tokens[3].getIntValue();
-	float calibratedValue = getCalibratedValue(keyIdx, adcVal);
+			if (tokens[0] == "SerialPortDied") // Serial Port Error
+			{
+					// Disable serial. Will update GUI.
+					enableSerial.setToggleState(false, sendNotification);
+					tokens.removeRange(0,1);
+			}
+			else if (tokens[0] == "SM") // State Machine Messages
+			{
+					labelSerialIndicator.setText(tokens[1], dontSendNotification);
+					
+					if (tokens[1] == "PRESYNC")
+					{
+							labelSerialIndicator.setColour(Label::textColourId, Colours::yellow);
+					}
+					else if (tokens[1] == "OOF")
+					{
+							labelSerialIndicator.setColour(Label::textColourId, Colours::red);
+							enableSerial.setToggleState(false, sendNotification);
+					}
+					else if (tokens[1] == "SYNC")
+					{
+							labelSerialIndicator.setColour(Label::textColourId, Colours::green);
+							isSynced = true;
+							updateGui();
+					}
+					tokens.removeRange(0,2);
+			}
+			else if (tokens[0] == "AK") // Key message
+			{
+					uint32 keyIdx = tokens[2].getIntValue();
+					uint32 adcVal = tokens[3].getIntValue();
+					float calibratedValue = getCalibratedValue(keyIdx, adcVal);
 		
-	keyboardMonitor.setKeyPosition(keyIdx, calibratedValue);
-	kcd->setKeyValue(keyIdx, adcVal);
+					keyboardMonitor.setKeyPosition(keyIdx, calibratedValue);
+					kcd->setKeyValue(keyIdx, adcVal);
 
-	if (isOscEnabled())
-	{
-	    String oscEndpoint = String("/retrofoot/") + String(keyIdx);
-	    lo_send(oscAddress, oscEndpoint.toRawUTF8(), "f", calibratedValue);
+					if (isOscEnabled())
+					{
+							String oscEndpoint = String("/retrofoot/") + String(keyIdx);
+							lo_send(oscAddress, oscEndpoint.toRawUTF8(), "f", calibratedValue);
+					}
+
+					if (isMidiEnabled())
+					{
+							
+							if ((true == midiIsNoteOn[keyIdx]) && (calibratedValue < aftertouchThresh()))
+							{
+									if (aftertouchMidi.getSelectedId() == ID_AFTERTOUCH_MONO)
+									{
+											midiOutput->sendMessageNow(MidiMessage::channelPressureChange(midiChannel(), 0));
+									}
+									
+									if (aftertouchMidi.getSelectedId() == ID_AFTERTOUCH_POLY)
+									{
+											midiOutput->sendMessageNow(MidiMessage::aftertouchChange(midiChannel(), midiOffset()+keyIdx, 0));
+									}		
+							}
+							
+							if (false == midiIsNoteOn[keyIdx] && calibratedValue > noteOnThresh())
+							{
+									
+									midiIsNoteOn[keyIdx] = true;
+									midiOutput->sendMessageNow(MidiMessage::noteOn(midiChannel(), midiOffset()+keyIdx, midiVelocity(keyIdx, calibratedValue, true)));
+							}
+							
+							if (true == midiIsNoteOn[keyIdx] && calibratedValue < noteOffThresh())
+							{
+									midiIsNoteOn[keyIdx] = false;
+									
+									midiOutput->sendMessageNow(MidiMessage::noteOff(midiChannel(), midiOffset()+keyIdx, midiVelocity(keyIdx, calibratedValue, false)));
+							}
+							
+							// Aftertouch
+							if ((true == midiIsNoteOn[keyIdx]) && (calibratedValue > aftertouchThresh()))
+							{
+									uint8 aftertouchVal = (uint8)(((calibratedValue-aftertouchThresh())/(1.0-aftertouchThresh()))*aftertouchDepth()*127.0);
+									
+									if (aftertouchMidi.getSelectedId() == ID_AFTERTOUCH_MONO)
+									{
+											midiOutput->sendMessageNow(MidiMessage::channelPressureChange(midiChannel(), aftertouchVal));
+									}
+									
+									if (aftertouchMidi.getSelectedId() == ID_AFTERTOUCH_POLY)
+									{
+											midiOutput->sendMessageNow(MidiMessage::aftertouchChange(midiChannel(), midiOffset()+keyIdx, aftertouchVal));
+									}		
+							}
+							
+		
+							// Update velocity table.
+							midiPrevValue[keyIdx] = calibratedValue;
+							
+					}
+					tokens.removeRange(0,4);
+			}
+			else if (tokens[0] == "CK") // Calibrate key
+			{
+					DialogWindow::showModalDialog("Calibrate Keys", kcd, this, Colour(0,0,0), true);
+					tokens.removeRange(0,1);
+			}
+			else
+			{
+					std::cout << "Received unknown message: " << message << std::endl;
+					tokens.removeRange(0,1);
+			}
 	}
-
-	if (isMidiEnabled())
-	{
-		 
-		if ((true == midiIsNoteOn[keyIdx]) && (calibratedValue < aftertouchThresh()))
-	    {
-				if (aftertouchMidi.getSelectedId() == ID_AFTERTOUCH_MONO)
-				{
-						midiOutput->sendMessageNow(MidiMessage::channelPressureChange(midiChannel(), 0));
-				}
-		
-				if (aftertouchMidi.getSelectedId() == ID_AFTERTOUCH_POLY)
-				{
-						midiOutput->sendMessageNow(MidiMessage::aftertouchChange(midiChannel(), midiOffset()+keyIdx, 0));
-				}		
-	    }
-
-	    if (false == midiIsNoteOn[keyIdx] && calibratedValue > noteOnThresh())
-	    {
-
-		midiIsNoteOn[keyIdx] = true;
-		midiOutput->sendMessageNow(MidiMessage::noteOn(midiChannel(), midiOffset()+keyIdx, midiVelocity(keyIdx, calibratedValue, true)));
-	    }
-			
-	    if (true == midiIsNoteOn[keyIdx] && calibratedValue < noteOffThresh())
-	    {
-		midiIsNoteOn[keyIdx] = false;
-		
-		midiOutput->sendMessageNow(MidiMessage::noteOff(midiChannel(), midiOffset()+keyIdx, midiVelocity(keyIdx, calibratedValue, false)));
-	    }
-
-	    // Aftertouch
-	    if ((true == midiIsNoteOn[keyIdx]) && (calibratedValue > aftertouchThresh()))
-	    {
-		uint8 aftertouchVal = (uint8)(((calibratedValue-aftertouchThresh())/(1.0-aftertouchThresh()))*aftertouchDepth()*127.0);
-
-		if (aftertouchMidi.getSelectedId() == ID_AFTERTOUCH_MONO)
-		{
-		    midiOutput->sendMessageNow(MidiMessage::channelPressureChange(midiChannel(), aftertouchVal));
-		}
-		
-		if (aftertouchMidi.getSelectedId() == ID_AFTERTOUCH_POLY)
-		{
-		    midiOutput->sendMessageNow(MidiMessage::aftertouchChange(midiChannel(), midiOffset()+keyIdx, aftertouchVal));
-		}		
-	    }
-
-		
-	    // Update velocity table.
-	    midiPrevValue[keyIdx] = calibratedValue;
-	}
-    }
-    else if (tokens[0] == "CK") // Calibrate key
-    {
-	DialogWindow::showModalDialog("Calibrate Keys", kcd, this, Colour(0,0,0), true);
-    }
-    else
-    {
-	std::cout << "Received unknown message: " << message << std::endl;
-    }
 }
 
 uint8 MainContentComponent::midiProgram()

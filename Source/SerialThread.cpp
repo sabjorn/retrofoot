@@ -198,15 +198,17 @@ void SerialThread::run()
 
 	// do the thing
 
-	for (uint32_t i = 0; i < strArr.size(); i++)
+/*	for (uint32_t i = 0; i < strArr.size(); i++)
 	{
 	    sendActionMessage(strArr[i]);
-	}
+		}*/
+
+	sendActionMessage(strArr.joinInToString(String(" ")));
 	
 	strArr.clear();
 
 	// sleep a bit so the threads don't all grind the CPU to a halt..
-	wait (5);
+	wait (10);
     }
 
 #endif
