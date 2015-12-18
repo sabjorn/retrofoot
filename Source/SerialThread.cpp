@@ -36,6 +36,7 @@ SerialThread::SerialThread()
     , sp(NULL)
 #endif
 {
+		setPriority(10);
 }
 
 SerialThread::~SerialThread()
@@ -146,10 +147,12 @@ void SerialThread::run()
 		// do the thing
 		parser.parse(buf, rc, strArr);
 
-		for (uint32_t i = 0; i < strArr.size(); i++)
+/*		for (uint32_t i = 0; i < strArr.size(); i++)
 		{
 		    sendActionMessage(strArr[i]);
-		}
+			}*/
+		sendActionMessage(strArr.joinIntoString(String(" ")));
+		
 
 		strArr.clear();
 	    }
@@ -208,7 +211,7 @@ void SerialThread::run()
 	strArr.clear();
 
 	// sleep a bit so the threads don't all grind the CPU to a halt..
-	wait (10);
+	wait (5);
     }
 
 #endif

@@ -375,7 +375,8 @@ void MainContentComponent::updateGui()
 void MainContentComponent::actionListenerCallback(const String &message)
 {
 	StringArray tokens = StringArray::fromTokens(message, true);
-
+	std::cout << "Received Message: " << message << std::endl;
+	
 	while (tokens.size())
 	{
 			if (tokens[0] == "SerialPortDied") // Serial Port Error
@@ -480,7 +481,7 @@ void MainContentComponent::actionListenerCallback(const String &message)
 			}
 			else
 			{
-					std::cout << "Received unknown message: " << message << std::endl;
+					std::cout << "Received unknown message: " << tokens[0] << std::endl;
 					tokens.removeRange(0,1);
 			}
 	}
@@ -696,7 +697,7 @@ void MainContentComponent::sliderValueChanged(Slider *s)
 
 	keyboardMonitor.setNoteOn(sliderNoteOnThresh.getMaxValue());
 	keyboardMonitor.setNoteOff(sliderNoteOnThresh.getMinValue());
-	keyboardMonitor.repaint();
+//	keyboardMonitor.repaint();
 	
 	}
     
@@ -710,7 +711,7 @@ void MainContentComponent::sliderValueChanged(Slider *s)
 
 	keyboardMonitor.setAftertouch(sliderAftertouchThresh.getMaxValue());
 	keyboardMonitor.setNoteOff(sliderAftertouchThresh.getMinValue());
-	keyboardMonitor.repaint();
+//	keyboardMonitor.repaint();
     }
 
 	if (s == &sliderVelocityParam)

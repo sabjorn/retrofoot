@@ -28,7 +28,7 @@ class MainContentComponent   : public Component,
                                public TextEditor::Listener,
                                public ComboBox::Listener,
                          	   public Slider::Listener,
-                         	   public Timer
+		                       public Timer
 {
 public:
     //==============================================================================
@@ -55,7 +55,7 @@ private:
     uint8 midiProgram();
     void sliderValueChanged(Slider *s);
 	void timerCallback() { keyboardMonitor.repaint(); };
-
+	
     float noteOnThresh() { return sliderNoteOnThresh.getMaxValue(); };
     float noteOffThresh() { return sliderNoteOnThresh.getMinValue(); };
     float aftertouchThresh() { return sliderAftertouchThresh.getMaxValue(); };
@@ -92,6 +92,7 @@ private:
     SerialThread        serialPortReader;
     Label               labelSerialStatus;
     Label               labelSerialIndicator;
+	String              serialData;
     
     // OSC Stuff
     GroupComponent groupOSC;

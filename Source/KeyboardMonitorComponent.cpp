@@ -20,7 +20,7 @@ void KeyboardMonitorComponent::drawWhiteNote(int midiNoteNumber, Graphics &g, in
 {
     MidiKeyboardComponent::drawWhiteNote(midiNoteNumber, g, x, y, w, h, isDown, isOver, lineColour, textColour);
     g.setColour(Colour(0,0,128));
-    g.setOpacity(0.5);
+//    g.setOpacity();
     g.fillRect(x+1,y,w-1,int(keyGauge[midiNoteNumber]*(h-1)));
 
 	g.setColour(Colours::red);
@@ -37,7 +37,7 @@ void KeyboardMonitorComponent::drawBlackNote(int midiNoteNumber, Graphics &g, in
 {
     MidiKeyboardComponent::drawBlackNote(midiNoteNumber, g, x, y, w, h, isDown, isOver, noteFillColour);
     g.setColour(Colour(0,0,128));
-    g.setOpacity(0.5);
+//    g.setOpacity(0.5);
     g.fillRect(x+1,y,w-2,int(keyGauge[midiNoteNumber]*(h-2)));
 
 	g.setColour(Colours::red);
