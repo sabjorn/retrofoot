@@ -72,6 +72,8 @@ int SerialThread::start(const String &device, int baudRate)
     // Set raw mode using low-level termios stuff (HACK!!!)
     tcgetattr(sp->fd, &t);
     cfmakeraw(&t);
+    t.c_cc[VMIN] = 1;
+    t.c_cc[VTIME] = 1;
     if (0 != tcsetattr(sp->fd, TCSANOW, &t))
 	return -1;
 

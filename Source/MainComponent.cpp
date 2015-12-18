@@ -375,7 +375,8 @@ void MainContentComponent::updateGui()
 void MainContentComponent::actionListenerCallback(const String &message)
 {
 	StringArray tokens = StringArray::fromTokens(message, true);
-	std::cout << "Received Message: " << message << std::endl;
+	
+	//std::cout << "Received Message: " << message << std::endl; //debug
 	
 	while (tokens.size())
 	{
