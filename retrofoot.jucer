@@ -37,10 +37,10 @@
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxSDK="10.9 SDK" osxCompatibility="default" osxArchitecture="default"
                        isDebug="1" optimisation="1" targetName="retrofoot" headerPath="/usr/local/include"
-                       libraryPath="/usr/local/lib"/>
+                       libraryPath="/usr/local/lib" defines=""/>
         <CONFIGURATION name="Release" osxSDK="10.9 SDK" osxCompatibility="default" osxArchitecture="default"
                        isDebug="0" optimisation="2" targetName="retrofoot" headerPath="/usr/local/include"
-                       libraryPath="/usr/local/lib"/>
+                       libraryPath="/usr/local/lib" defines=""/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../juce/modules"/>

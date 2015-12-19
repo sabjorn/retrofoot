@@ -1,5 +1,6 @@
 #include "SerialThread.h"
 
+#ifndef RETROFOOT_SERIAL_SIM
 /* HACK!! */
 #include <termios.h>
 struct sp_port {
@@ -29,6 +30,7 @@ struct sp_port {
 	int fd;
 #endif
 };
+#endif
 
 SerialThread::SerialThread() 
     : Thread("Serial Reader")
@@ -78,7 +80,7 @@ int SerialThread::start(const String &device, int baudRate)
 	return -1;
 
 #else
-    File simFile("./serial_sim.dat");
+    File simFile("/Users/sabjorn/retrofoot/Builds/Linux/serial_sim.dat");
     if (simFile.loadFileAsData(simData) == false)
     {
 	return -1;
@@ -138,7 +140,7 @@ void SerialThread::run()
 
     while (!threadShouldExit()) 
     {
-	rc = sp_output_waiting(sp);
+	rc = sp_input_waiting(sp);
 
 	if (rc >= 0)
 	{
@@ -208,7 +210,7 @@ void SerialThread::run()
 	    sendActionMessage(strArr[i]);
 		}*/
 
-	sendActionMessage(strArr.joinInToString(String(" ")));
+	sendActionMessage(strArr.joinIntoString(String(" ")));
 	
 	strArr.clear();
 
