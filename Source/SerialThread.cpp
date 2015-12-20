@@ -1,5 +1,6 @@
 #include "SerialThread.h"
 
+#ifndef RETROFOOT_SERIAL_SIM
 /* HACK!! */
 #include <termios.h>
 struct sp_port {
@@ -29,6 +30,7 @@ struct sp_port {
 	int fd;
 #endif
 };
+#endif
 
 SerialThread::SerialThread() 
     : Thread("Serial Reader")
@@ -36,6 +38,7 @@ SerialThread::SerialThread()
     , sp(NULL)
 #endif
 {
+		setPriority(10);
 }
 
 SerialThread::~SerialThread()
@@ -71,6 +74,8 @@ int SerialThread::start(const String &device, int baudRate)
     // Set raw mode using low-level termios stuff (HACK!!!)
     tcgetattr(sp->fd, &t);
     cfmakeraw(&t);
+    t.c_cc[VMIN] = 1;
+    t.c_cc[VTIME] = 1;
     if (0 != tcsetattr(sp->fd, TCSANOW, &t))
 	return -1;
 
@@ -135,7 +140,7 @@ void SerialThread::run()
 
     while (!threadShouldExit()) 
     {
-	rc = sp_output_waiting(sp);
+	rc = sp_input_waiting(sp);
 
 	if (rc >= 0)
 	{
@@ -146,10 +151,12 @@ void SerialThread::run()
 		// do the thing
 		parser.parse(buf, rc, strArr);
 
-		for (uint32_t i = 0; i < strArr.size(); i++)
+/*		for (uint32_t i = 0; i < strArr.size(); i++)
 		{
 		    sendActionMessage(strArr[i]);
-		}
+			}*/
+		sendActionMessage(strArr.joinIntoString(String(" ")));
+		
 
 		strArr.clear();
 	    }
@@ -198,10 +205,12 @@ void SerialThread::run()
 
 	// do the thing
 
-	for (uint32_t i = 0; i < strArr.size(); i++)
+/*	for (uint32_t i = 0; i < strArr.size(); i++)
 	{
 	    sendActionMessage(strArr[i]);
-	}
+		}*/
+
+	sendActionMessage(strArr.joinIntoString(String(" ")));
 	
 	strArr.clear();
 

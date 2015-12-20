@@ -21,7 +21,10 @@ public:
 
     void clearKeys();
     void setKeyPosition(int midiNoteNumber, float keyPosition);
-    
+	void setNoteOn(float thresh);
+	void setNoteOff(float thresh);
+	void setAftertouch(float thresh);
+
 private:
 
     MidiKeyboardState keyboardState;
@@ -31,8 +34,9 @@ private:
     bool mouseDownOnKey(int midiNoteNumber, const MouseEvent &e);
 
     float *keyGauge;
-
-
+	float aftertouchThresh;
+	float noteOnThresh;
+	float noteOffThresh;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KeyboardMonitorComponent)
