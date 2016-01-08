@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="poCpX3" name="retrofoot" projectType="guiapp" version="1.0.0"
               bundleIdentifier="com.misticlabs.retrofoot" includeBinaryInAppConfig="1"
-              jucerVersion="3.2.0">
+              jucerVersion="4.1.0">
   <MAINGROUP id="FYRgwK" name="retrofoot">
     <GROUP id="{5F1EFCF4-0626-E490-E53A-498FE85CA886}" name="Source">
       <FILE id="va18RC" name="MidiDeviceChooser.cpp" compile="1" resource="0"
@@ -33,14 +33,14 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX" externalLibraries="serialport&#10;lo">
+    <XCODE_MAC targetFolder="Builds/MacOSX" externalLibraries="serialport">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxSDK="10.9 SDK" osxCompatibility="default" osxArchitecture="default"
                        isDebug="1" optimisation="1" targetName="retrofoot" headerPath="/usr/local/include"
-                       libraryPath="/usr/local/lib"/>
+                       libraryPath="/usr/local/lib" defines=""/>
         <CONFIGURATION name="Release" osxSDK="10.9 SDK" osxCompatibility="default" osxArchitecture="default"
                        isDebug="0" optimisation="2" targetName="retrofoot" headerPath="/usr/local/include"
-                       libraryPath="/usr/local/lib"/>
+                       libraryPath="/usr/local/lib" defines=""/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../juce/modules"/>
@@ -57,9 +57,10 @@
         <MODULEPATH id="juce_audio_formats" path="../juce/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../juce/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../juce/modules"/>
+        <MODULEPATH id="juce_osc" path="../juce/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <LINUX_MAKE targetFolder="Builds/Linux" externalLibraries="serialport&#10;lo">
+    <LINUX_MAKE targetFolder="Builds/Linux" externalLibraries="serialport">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
                        targetName="retrofoot"/>
@@ -81,6 +82,7 @@
         <MODULEPATH id="juce_audio_formats" path="../juce/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../juce/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../juce/modules"/>
+        <MODULEPATH id="juce_osc" path="../juce/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
   </EXPORTFORMATS>
@@ -98,6 +100,7 @@
     <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_osc" showAllCode="1" useLocalCopy="0"/>
     <MODULES id="juce_video" showAllCode="1" useLocalCopy="0"/>
   </MODULES>
   <JUCEOPTIONS/>

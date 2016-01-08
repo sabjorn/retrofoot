@@ -15,7 +15,6 @@
 #include "MidiDeviceChooser.h"
 #include "KeyboardMonitorComponent.h"
 #include "KeyCalibrationDialog.h"
-#include "lo/lo.h"
 
 //==============================================================================
 /*
@@ -135,7 +134,7 @@ private:
     KeyboardMonitorComponent keyboardMonitor;
 
     // OSC sender
-    lo_address oscAddress;
+    OSCSender oscSender;
 
     // Calibration Stuff
     KeyCalibrationDialog *kcd;

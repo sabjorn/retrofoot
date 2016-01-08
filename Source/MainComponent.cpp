@@ -188,7 +188,7 @@ MainContentComponent::MainContentComponent()
     velocityMidi.addItem("Fixed", ID_VELOCITY_FIXED);
     
     addAndMakeVisible(velocityMidi);
-    velocityMidi.setSelectedId(getAppProperties().getUserSettings()->getIntValue("midivel", 128));
+    velocityMidi.setSelectedId(getAppProperties().getUserSettings()->getIntValue("midivel", 0));
     velocityMidi.addListener(this);
 
 	// "Velocity Parameter"
@@ -418,8 +418,10 @@ void MainContentComponent::actionListenerCallback(const String &message)
 
 					if (isOscEnabled())
 					{
-							String oscEndpoint = String("/retrofoot/") + String(keyIdx);
-							lo_send(oscAddress, oscEndpoint.toRawUTF8(), "f", calibratedValue);
+					    //String oscEndpoint = String("/retrofoot/") + String(keyIdx);
+					    //lo_send(oscAddress, oscEndpoint.toRawUTF8(), "f", calibratedValue);
+					    OSCMessage msg("/retrofoot/" + String(keyIdx), calibratedValue);
+					    oscSender.send(msg);
 					}
 
 					if (isMidiEnabled())
@@ -574,11 +576,14 @@ void MainContentComponent::buttonClicked(Button *button)
     {
 	if (isOscEnabled())
     	{
-	    oscAddress = lo_address_new(textOSCHost.getText().toRawUTF8(), textOSCPort.getText().toRawUTF8());
+	    if (!oscSender.connect(textOSCHost.getText(), textOSCPort.getText().getIntValue()))
+	    {
+		enableOSC.setToggleState(false, dontSendNotification);
+	    }
 	}
 	else
 	{
-	    lo_address_free(oscAddress);
+	    oscSender.disconnect();
 	}				
 
 	updateGui();

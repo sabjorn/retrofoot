@@ -141,6 +141,7 @@ void SerialThread::run()
 			rc = sp_blocking_read(sp, buf, BUF_SIZE, 5);
 
 //			rc = sp_input_waiting(sp);
+//	rc = sp_input_waiting(sp);
 
 /*	if (rc >= 0)
 	{
