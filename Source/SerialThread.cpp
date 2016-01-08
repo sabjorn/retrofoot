@@ -1,5 +1,6 @@
 #include "SerialThread.h"
 
+#ifndef RETROFOOT_SERIAL_SIM
 /* HACK!! */
 #include <termios.h>
 struct sp_port {
@@ -29,6 +30,7 @@ struct sp_port {
 	int fd;
 #endif
 };
+#endif
 
 SerialThread::SerialThread() 
     : Thread("Serial Reader")
@@ -72,8 +74,6 @@ int SerialThread::start(const String &device, int baudRate)
     // Set raw mode using low-level termios stuff (HACK!!!)
     tcgetattr(sp->fd, &t);
     cfmakeraw(&t);
-    t.c_cc[VMIN] = 1;
-    t.c_cc[VTIME] = 1;
     if (0 != tcsetattr(sp->fd, TCSANOW, &t))
 	return -1;
 
@@ -138,27 +138,29 @@ void SerialThread::run()
 
     while (!threadShouldExit()) 
     {
-	rc = sp_output_waiting(sp);
+			rc = sp_blocking_read(sp, buf, BUF_SIZE, 5);
 
-	if (rc >= 0)
+//			rc = sp_input_waiting(sp);
+
+/*	if (rc >= 0)
 	{
-	    rc = sp_nonblocking_read(sp, buf, BUF_SIZE);
+	rc = sp_nonblocking_read(sp, buf, BUF_SIZE);*/
 
 	    if (rc > 0) 
 	    {
 		// do the thing
 		parser.parse(buf, rc, strArr);
 
-/*		for (uint32_t i = 0; i < strArr.size(); i++)
+		for (uint32_t i = 0; i < strArr.size(); i++)
 		{
 		    sendActionMessage(strArr[i]);
-			}*/
-		sendActionMessage(strArr.joinIntoString(String(" ")));
+		}
+//		sendActionMessage(strArr.joinIntoString(String(" ")));
 		
 
 		strArr.clear();
 	    }
-	} 
+//			}
 
 	// error happened
 	else if (rc < 0)
@@ -168,7 +170,7 @@ void SerialThread::run()
 	}
 
 	// sleep a bit so the threads don't all grind the CPU to a halt..
-	wait (5);
+//	wait (5);
     }
 
 #else
@@ -208,7 +210,7 @@ void SerialThread::run()
 	    sendActionMessage(strArr[i]);
 		}*/
 
-	sendActionMessage(strArr.joinInToString(String(" ")));
+	sendActionMessage(strArr.joinIntoString(String(" ")));
 	
 	strArr.clear();
 
