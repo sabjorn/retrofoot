@@ -414,8 +414,11 @@ void MainContentComponent::actionListenerCallback(const String &message)
 					float calibratedValue = getCalibratedValue(keyIdx, adcVal);
 		
 					keyboardMonitor.setKeyPosition(keyIdx, calibratedValue);
-					kcd->setKeyValue(keyIdx, adcVal);
-
+                    if (kcd->isShowing())
+                    {
+                        kcd->setKeyValue(keyIdx, adcVal);
+                    }
+                
 					if (isOscEnabled())
 					{
 					    //String oscEndpoint = String("/retrofoot/") + String(keyIdx);
@@ -518,6 +521,7 @@ uint8 MainContentComponent::midiVelocity(uint32 keyIdx, float value, bool attack
     {
 	return (uint8)(sliderVelocityParam.getValue());
     }
+    return 0;
 }
 
 bool MainContentComponent::isMidiEnabled()

@@ -18,7 +18,8 @@
 */
 class KeyCalibrationDialog    : public Component,
                                 public Slider::Listener,
-                                public Button::Listener
+                                public Button::Listener,
+                                public Timer
     
 {
 public:
@@ -35,12 +36,15 @@ public:
 
 private:
 
+    void timerCallback();
+
     Slider **sliderCalib;
     Button **buttonCalib;
     TextButton buttonCalibAll;
     uint32_t nKeys;
     uint32_t *pMinValues;
     uint32_t *pMaxValues;
+    uint32_t *pCurValues;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KeyCalibrationDialog)
 };
 

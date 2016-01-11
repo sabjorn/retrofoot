@@ -21,6 +21,8 @@ KeyCalibrationDialog::KeyCalibrationDialog(uint32_t numKeys, uint32_t *minValues
 {
     const char *notes[12] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" }; 
 
+    pCurValues = new uint32_t[numKeys];
+    
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
     setSize((numKeys+1)*20,350);
@@ -71,10 +73,14 @@ KeyCalibrationDialog::KeyCalibrationDialog(uint32_t numKeys, uint32_t *minValues
     buttonCalibAll.addListener(this);
     addAndMakeVisible(buttonCalibAll);
 
+    startTimer(100);
+    
 }
 
 KeyCalibrationDialog::~KeyCalibrationDialog()
 {
+    stopTimer();
+
     for (uint32_t i = 0; i < nKeys; i++)
     {
 	delete sliderCalib[i];
@@ -83,6 +89,8 @@ KeyCalibrationDialog::~KeyCalibrationDialog()
 
     delete [] sliderCalib;
     delete [] buttonCalib;
+    delete [] pCurValues;
+
 
 }
 
@@ -92,7 +100,6 @@ void KeyCalibrationDialog::setKeyValue(int key, int value)
     {
 	if (value < pMinValues[key])
 	{
-	    sliderCalib[key]->setMinValue(value, dontSendNotification);
 	    pMinValues[key] = value;
 	    getAppProperties().getUserSettings()->setValue(String("min") + String(key), String(pMinValues[key]));
 	    if (pMaxValues[key] == value)
@@ -104,7 +111,6 @@ void KeyCalibrationDialog::setKeyValue(int key, int value)
 
 	if (value > pMaxValues[key])
 	{
-	    sliderCalib[key]->setMaxValue(value, dontSendNotification);
 	    pMaxValues[key] = value;
 	    getAppProperties().getUserSettings()->setValue(String("max") + String(key), String(pMaxValues[key]));
 	    if (pMinValues[key] == value)
@@ -114,12 +120,27 @@ void KeyCalibrationDialog::setKeyValue(int key, int value)
 	    }
 	}
 
+        getAppProperties().getUserSettings()->saveIfNeeded();
     }
 
-    sliderCalib[key]->setValue(value);
-    getAppProperties().getUserSettings()->saveIfNeeded();
+    pCurValues[key] = value;
+    //sliderCalib[key]->setValue(value);
     
 }
+
+void KeyCalibrationDialog::timerCallback()
+{
+    if (this->isShowing())
+    {
+    for (uint32 key = 0; key < nKeys; key++)
+    {
+        sliderCalib[key]->setMinValue(pMinValues[key], dontSendNotification);
+	    sliderCalib[key]->setMaxValue(pMaxValues[key], dontSendNotification);
+        sliderCalib[key]->setValue(pCurValues[key]);
+    }
+    }
+}
+
 
 void KeyCalibrationDialog::paint (Graphics& g)
 {

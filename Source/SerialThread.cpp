@@ -69,13 +69,22 @@ int SerialThread::start(const String &device, int baudRate)
     rc = sp_set_baudrate(sp, baudRate);
 
     if (SP_OK != rc)
-	return -1;
+        return -1;
 
     // Set raw mode using low-level termios stuff (HACK!!!)
     tcgetattr(sp->fd, &t);
-    cfmakeraw(&t);
+//    cfmakeraw(&t);
+    //t.c_iflag = 0;
+    //t.c_oflag = 0;
+    //t.c_cflag = 7346;
+    //t.c_lflag = 2608;
+    t.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
+    t.c_oflag &= ~OPOST;
+    t.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+    t.c_cflag &= ~(CSIZE | PARENB);
+    t.c_cflag |= CS8;
     if (0 != tcsetattr(sp->fd, TCSANOW, &t))
-	return -1;
+        return -1;
 
 #else
     File simFile("./serial_sim.dat");
@@ -138,7 +147,7 @@ void SerialThread::run()
 
     while (!threadShouldExit()) 
     {
-			rc = sp_blocking_read(sp, buf, BUF_SIZE, 5);
+			rc = sp_blocking_read(sp, buf, BUF_SIZE, 10);
 
 //			rc = sp_input_waiting(sp);
 //	rc = sp_input_waiting(sp);
@@ -152,11 +161,11 @@ void SerialThread::run()
 		// do the thing
 		parser.parse(buf, rc, strArr);
 
-		for (uint32_t i = 0; i < strArr.size(); i++)
-		{
-		    sendActionMessage(strArr[i]);
-		}
-//		sendActionMessage(strArr.joinIntoString(String(" ")));
+		//for (uint32_t i = 0; i < strArr.size(); i++)
+		//{
+		//    sendActionMessage(strArr[i]);
+		//}
+		sendActionMessage(strArr.joinIntoString(String(" ")));
 		
 
 		strArr.clear();
